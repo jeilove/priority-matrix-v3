@@ -38,10 +38,11 @@ export default function Home() {
   const { todos, moveTodo, moveTodoAndHide, sortOrder, setSortOrder } = useTodoStore();
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const version = "3.0.1";
+  const version = "3.2.0";
 
   useEffect(() => {
-    console.log(`🚀 App Version: ${version} (Everything Enhanced) - ${new Date().toLocaleTimeString()}`);
+    // 이미 Header에서 3.2.0 로그를 남기므로 여기서는 중복 제거하거나 업데이트합니다
+    console.log(`🚀 Priority Matrix Home v${version} - Initialized`);
   }, []);
 
   const sensors = useSensors(
