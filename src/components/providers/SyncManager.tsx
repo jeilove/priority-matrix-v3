@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTodoStore } from "@/store/useTodoStore";
 
@@ -8,6 +8,8 @@ export default function SyncManager() {
   const { status } = useSession();
   const { todos, syncToDB, syncFromDB } = useTodoStore();
   const [initialFetchDone, setInitialFetchDone] = useState(false);
+  // ref로 관리: initialFetchDone이 true로 바뀌는 것 자체가 auto-save를 트리거하지 않도록 분리
+  const autoSaveEnabledRef = useRef(false);
 
   // 1. 로그인 시: DB에서 먼저 불러오기 (1회만)
   useEffect(() => {
@@ -20,23 +22,25 @@ export default function SyncManager() {
         })
         .catch(err => {
           console.error("❌ SyncManager: DB 로드 실패.", err);
-          // 실패하더라도 initialFetchDone을 true로 설정하여
-          // 로컬에서 새로 입력하는 데이터가 DB에 저장될 수 있게 합니다.
           setInitialFetchDone(true);
         });
     }
 
-    // 비로그인 상태로 전환 시 초기화
     if (status === "unauthenticated") {
       setInitialFetchDone(false);
     }
   }, [status, initialFetchDone]);
 
-  // 2. 데이터 변경 시 DB에 자동 저장 (Debounce 2초)
-  // isSyncing은 가드로 쓰지 않음: deps에 없으면 sync 완료 후 effect가 재실행되지 않아
-  // sync 중 추가된 todo가 영구적으로 유실됩니다. syncToDB는 get().todos로 최신 상태를 읽으므로 안전합니다.
+  // initialFetchDone 변경을 ref에 동기화 (auto-save effect의 deps에서 제외하기 위함)
   useEffect(() => {
-    if (status !== "authenticated" || !initialFetchDone) {
+    autoSaveEnabledRef.current = initialFetchDone;
+  }, [initialFetchDone]);
+
+  // 2. todos가 실제로 변경될 때만 DB에 자동 저장 (Debounce 2초)
+  // initialFetchDone을 deps에서 제외 → 로그인 시 불필요한 업로드 방지
+  // autoSaveEnabledRef로 초기 fetch 완료 여부를 확인
+  useEffect(() => {
+    if (status !== "authenticated" || !autoSaveEnabledRef.current) {
       return;
     }
 
@@ -48,7 +52,7 @@ export default function SyncManager() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, [todos, status, initialFetchDone]);
+  }, [todos, status]);
 
   return null;
 }
