@@ -20,12 +20,13 @@ export async function GET() {
     });
     return NextResponse.json(todos);
   } catch (error: any) {
-    console.error("❌ Fetch Error Details:", {
-      message: error.message,
-      code: error.code,
-      meta: error.meta
-    });
-    return NextResponse.json({ error: "Failed to fetch todos", details: error.message }, { status: 500 });
+    const errorDetail = error.message || String(error);
+    console.error("❌ API[GET] Fetch Error:", errorDetail);
+    return NextResponse.json({ 
+      error: "Failed to fetch todos", 
+      details: errorDetail,
+      code: error.code // Prisma 에러 코드 포함
+    }, { status: 500 });
   }
 }
 
