@@ -6,7 +6,7 @@ import { useTodoStore } from "@/store/useTodoStore";
 
 export default function SyncManager() {
   const { status } = useSession();
-  const { todos, syncToDB, syncFromDB, isSyncing } = useTodoStore();
+  const { todos, syncToDB, syncFromDB } = useTodoStore();
   const [initialFetchDone, setInitialFetchDone] = useState(false);
 
   // 1. 로그인 시: DB에서 먼저 불러오기 (1회만)
@@ -33,8 +33,10 @@ export default function SyncManager() {
   }, [status, initialFetchDone]);
 
   // 2. 데이터 변경 시 DB에 자동 저장 (Debounce 2초)
+  // isSyncing은 가드로 쓰지 않음: deps에 없으면 sync 완료 후 effect가 재실행되지 않아
+  // sync 중 추가된 todo가 영구적으로 유실됩니다. syncToDB는 get().todos로 최신 상태를 읽으므로 안전합니다.
   useEffect(() => {
-    if (status !== "authenticated" || !initialFetchDone || isSyncing) {
+    if (status !== "authenticated" || !initialFetchDone) {
       return;
     }
 
