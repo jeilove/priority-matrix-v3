@@ -11,6 +11,7 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
   return (
     <header className="fixed-nav">
       <div className="nav-icons">
+        <script dangerouslySetInnerHTML={{ __html: `console.log("Priority Matrix v3.2.0 - Active");` }} />
         <Link href="/" className="nav-icon-link" title="홈">
           <HomeIcon size={30} />
         </Link>
@@ -18,7 +19,7 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
           <img src="/logo_final_v2.png" alt="해줘봐요" className="nav-logo-img" />
         </Link>
 
-        <span className="version-badge">v3.1.6</span>
+        <span className="version-badge">v3.2.0</span>
 
         {session ? (
           <div className="user-profile">
@@ -27,13 +28,15 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
             ) : (
               <span className="user-initial">{session.user?.name?.[0] || 'U'}</span>
             )}
-            <button className="nav-icon-link logout-btn" onClick={() => signOut()} title="로그아웃">
-              <LogOut size={24} />
+            <button className="nav-icon-link logout-btn-with-text" onClick={() => signOut()} title="로그아웃">
+              <LogOut size={18} />
+              <span className="btn-text">로그아웃</span>
             </button>
           </div>
         ) : (
-          <button className="nav-icon-link login-btn" onClick={() => signIn('google')} title="구글 로그인">
-            <LogIn size={24} />
+          <button className="nav-icon-link login-btn-with-text" onClick={() => signIn('google')} title="구글 로그인">
+            <LogIn size={18} />
+            <span className="btn-text">LOGIN</span>
           </button>
         )}
 
@@ -126,6 +129,35 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
           padding: 2px 6px;
           background: rgba(255, 255, 255, 0.05);
           border-radius: 4px;
+        }
+        .login-btn-with-text, .logout-btn-with-text {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 12px;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 20px;
+          color: white;
+          font-weight: 600;
+          font-size: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          transition: all 0.3s ease;
+        }
+        .login-btn-with-text {
+          background: linear-gradient(135deg, rgba(66, 133, 244, 0.3), rgba(52, 168, 83, 0.3));
+          border-color: rgba(66, 133, 244, 0.5);
+        }
+        .login-btn-with-text:hover {
+          background: linear-gradient(135deg, rgba(66, 133, 244, 0.5), rgba(52, 168, 83, 0.5));
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        }
+        .btn-text {
+          letter-spacing: 0.5px;
+        }
+        @media (max-width: 600px) {
+          .btn-text { display: none; }
+          .login-btn-with-text, .logout-btn-with-text { padding: 8px; }
         }
       `}</style>
     </header>

@@ -6,7 +6,12 @@ import { useTodoStore } from "@/store/useTodoStore";
 
 export default function SyncManager() {
   const { data: session, status } = useSession();
-  const { todos, syncToDB, syncFromDB, isSyncing } = useTodoStore();
+  const { todos, syncToDB, syncFromDB, isSyncing, ensureGuideTodos } = useTodoStore();
+
+  // 0. 초기화: 목록이 비어있으면 가이드 데이터 생성
+  useEffect(() => {
+    ensureGuideTodos();
+  }, []);
 
   // 1. 로그인 시 DB에서 데이터 가져오기 (초기 1회)
   useEffect(() => {

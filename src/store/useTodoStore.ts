@@ -60,15 +60,52 @@ interface TodoState {
     // DB 동기화 관련
     syncToDB: () => Promise<void>;
     syncFromDB: () => Promise<void>;
+    
+    // 초기화 및 복구
+    ensureGuideTodos: () => void;
 }
 
 export const useTodoStore = create<TodoState>()(
     persist(
         (set, get) => ({
-            todos: [],
+            todos: [], // 초기값은 비워두고 persist 후 체크
             sortOrder: 'recent',
             isSyncing: false,
             lastSyncTime: null,
+
+            ensureGuideTodos: () => {
+                const currentTodos = get().todos;
+                if (currentTodos.length === 0) {
+                    set({
+                        todos: [
+                            {
+                                id: 'guide-1',
+                                text: '🚀 환영합니다! 중앙의 +를 눌러 첫 할일을 만들어보세요',
+                                estimate: '1m',
+                                quadrant: 'unassigned',
+                                status: 'todo',
+                                createdAt: Date.now(),
+                            },
+                            {
+                                id: 'guide-2',
+                                text: '🎯 중요하고 긴급한 일은 Q1(당장해)으로 드래그하세요',
+                                estimate: '5m',
+                                quadrant: 'q1',
+                                status: 'todo',
+                                createdAt: Date.now() - 1000,
+                            },
+                            {
+                                id: 'guide-3',
+                                text: '✅ 완료된 일은 자동으로 보관함(Inbox)으로 이동합니다',
+                                estimate: '2m',
+                                quadrant: 'inbox',
+                                status: 'done',
+                                createdAt: Date.now() - 2000,
+                            }
+                        ]
+                    });
+                }
+            },
 
             setSortOrder: (order) => set({ sortOrder: order }),
             setTodos: (todos) => set({ todos }),
