@@ -139,10 +139,22 @@ export const useTodoStore = create<TodoState>()(
                         throw new Error('DB 불러오기 실패: ' + errorText);
                     }
                     const dbTodos = await response.json();
-                    console.log('📡 syncFromDB count:', Array.isArray(dbTodos) ? dbTodos.length : 'Not Array');
+                    const currentTodos = get().todos;
+
+                    console.log('📡 syncFromDB check:', { db: dbTodos.length, local: currentTodos.length });
+
                     if (Array.isArray(dbTodos)) {
-                        // DB 데이터로 항상 덮어씀 (빈 배열이어도 반영)
-                        set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
+                        if (dbTodos.length > 0) {
+                            // DB에 데이터가 있으면 DB 데이터로 덮어씀
+                            set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
+                            console.log('📡 syncFromDB: Overwritten with DB data');
+                        } else if (currentTodos.length > 0) {
+                            // DB가 비어있고 로컬에 데이터가 있으면 로컬 유지 (후속 SyncManager가 업로드할 것)
+                            console.log('📡 syncFromDB: Keep local data (DB is empty)');
+                        } else {
+                            // 둘 다 비어있으면 초기화
+                            set({ todos: [], lastSyncTime: new Date().toLocaleString() });
+                        }
                     }
                 } catch (err) {
                     console.error('📡 syncFromDB Exception:', err);
