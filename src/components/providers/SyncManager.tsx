@@ -8,19 +8,23 @@ export default function SyncManager() {
   const { data: session, status } = useSession();
   const { todos, syncToDB, syncFromDB, isSyncing, ensureGuideTodos } = useTodoStore();
 
-  // 0. 초기화: 목록이 비어있으면 즉시 가이드 데이터 생성 (로딩 직후 1회)
+  // 0. 초기화: 목록이 비어있으면 즉시 가이드 데이터 생성
   useEffect(() => {
-    // 0.5초의 여유를 두어 persist rehydration이 완료되기를 기다립니다
+    console.log("🔍 SyncManager: Initializing Guide Todos Check...", { todosLength: todos.length });
     const timer = setTimeout(() => {
       ensureGuideTodos();
-    }, 500);
+    }, 1500); // 더 넉넉하게 대기
     return () => clearTimeout(timer);
   }, []);
 
   // 1. 로그인 시 DB에서 데이터 가져오기
   useEffect(() => {
+    console.log("🔍 SyncManager: Auth Status changed to:", status);
     if (status === "authenticated") {
-      syncFromDB().catch(err => console.error("Initial Sync Error:", err));
+      console.log("🔄 SyncManager: Start fetching from DB...");
+      syncFromDB()
+        .then(() => console.log("✅ SyncManager: DB Fetch Success!"))
+        .catch(err => console.error("❌ SyncManager: DB Fetch Error:", err));
     }
   }, [status]);
 

@@ -75,7 +75,12 @@ export const useTodoStore = create<TodoState>()(
 
             ensureGuideTodos: () => {
                 const currentTodos = get().todos;
-                if (currentTodos.length === 0) {
+                const isEmpty = !Array.isArray(currentTodos) || currentTodos.length === 0;
+                console.log("🛠 ensureGuideTodos: Current Todos Check", { count: currentTodos?.length, isEmpty });
+                
+                if (isEmpty) {
+                    console.log("🛠 ensureGuideTodos: Creating guide data...");
+                    // ... guide data creation same as before
                     set({
                         todos: [
                             {
@@ -131,19 +136,28 @@ export const useTodoStore = create<TodoState>()(
             },
 
             syncFromDB: async () => {
+                console.log("📡 useTodoStore: Requesting /api/todos...");
                 set({ isSyncing: true });
                 try {
                     const response = await fetch('/api/todos');
-                    if (!response.ok) throw new Error('DB 불러오기 실패');
+                    console.log("📡 useTodoStore: DB Response Status:", response.status);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error("📡 useTodoStore: DB Error Response:", errorText);
+                        throw new Error('DB 불러오기 실패: ' + errorText);
+                    }
                     const dbTodos = await response.json();
+                    console.log("📡 useTodoStore: Fetched DB Todos count:", Array.isArray(dbTodos) ? dbTodos.length : 'Not Array');
                     if (Array.isArray(dbTodos)) {
-                        // DB 데이터가 비어있지 않은 경우에만 업데이트
                         if (dbTodos.length > 0) {
                             set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
+                            console.log("📡 useTodoStore: Store updated with DB data.");
+                        } else {
+                            console.log("📡 useTodoStore: DB is empty, keeping local data.");
                         }
                     }
                 } catch (err) {
-                    console.error('DB Fetch Error:', err);
+                    console.error('📡 useTodoStore: DB Sync Exception:', err);
                     throw err;
                 } finally {
                     set({ isSyncing: false });
