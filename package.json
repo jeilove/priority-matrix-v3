@@ -1,0 +1,34 @@
+{
+  "name": "priority-matrix",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001 -H 0.0.0.0",
+    "dev:clean": "node -e \"const fs = require('fs'); if (fs.existsSync('.next')) fs.rmSync('.next', { recursive: true, force: true });\" && next dev -p 3001 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "lucide-react": "latest",
+    "next": "15.1.7",
+    "react": "latest",
+    "react-dom": "latest",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
+    "@prisma/client": "^7.6.0",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "next-auth": "^4.24.13",
+    "prisma": "^7.6.0",
+    "typescript": "latest"
+  }
+}
