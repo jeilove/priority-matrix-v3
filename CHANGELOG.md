@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## [2026-04-07]
+## [2026-04-07] v3.2.8 - DB 동기화 완전 정상화
+- **근본 원인 해결**: Prisma 버전 다운그레이드(7→6.4.1) 후 `prisma db push` 미실행으로 Neon DB에 테이블이 없어 POST 500 에러 연속 발생. `prisma db push` 실행으로 즉시 해결.
+- **Prisma 6.4.1 안정화** (v3.2.6): 검증된 다른 프로젝트(Stock Chart Puzzle) 패턴 참조하여 불안정한 Prisma 7+Neon 어댑터 조합을 6.4.1 표준 방식으로 전환. `prisma.config.ts`, `debug-db` 라우트 정리.
+- **안전한 동기화 병합 전략** (v3.2.7): `syncFromDB` 시 DB가 비어있을 경우 로컬 데이터를 보존하는 로직 추가. `initialFetchDone`을 `useState`로 전환하여 DB 로드 완료 즉시 자동 업로드 트리거 보장.
+
 #### 로컬 개발 환경 안정화 및 인증 복구 (v3.2.0)
 - **로컬 DB 500 에러 해결**: 
   - 로컬 개발 시 Neon 서버리스 어댑터의 WebSocket 충돌을 방지하기 위해, 개발 환경(`NODE_ENV !== 'production'`)에서는 표준 TCP 연결(`PrismaClient`)을 사용하도록 분기 처리했습니다.
