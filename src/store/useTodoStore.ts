@@ -14,7 +14,7 @@ export interface Todo {
     estimate: string;
     quadrant: QuadrantType;
     createdAt: number;
-    updatedAt: number; // 최신성 추적용 필드
+    updatedAt: number;
     isHidden?: boolean;
     energy?: EnergyType;
     status: StatusType;
@@ -40,15 +40,13 @@ interface TodoState {
     moveTodoAndHide: (id: string, quadrant: QuadrantType) => void;
     deleteTodo: (id: string) => void;
     clearInbox: () => void;
+    setSortOrder: (order: SortOrderType) => void;
+    updateTodoRanks: (updates: { id: string; rank: number }[]) => void;
     
     syncFromDB: () => Promise<void>;
     syncToDB: () => Promise<void>;
-    setSortOrder: (order: SortOrderType) => void;
-
-    // 추가 복구 함수들
     exportTodos: () => void;
     importTodos: (file: File) => Promise<void>;
-    updateTodoRanks: (updates: { id: string; rank: number }[]) => void;
 }
 
 export const useTodoStore = create<TodoState>()(
@@ -60,25 +58,28 @@ export const useTodoStore = create<TodoState>()(
             sortOrder: 'recent',
 
             addTodo: (params) =>
-                set((state) => ({
-                    todos: [
-                        ...state.todos,
-                        {
-                            id: Math.random().toString(36).substring(2, 11),
-                            text: params.text,
-                            estimate: params.estimate,
-                            quadrant: params.quadrant || 'inbox',
-                            status: params.status || 'todo',
-                            energy: params.energy || 'energy-medium',
-                            repetition: params.repetition || [],
-                            context: params.context || [],
-                            tags: params.tags || [],
-                            description: params.description || '',
-                            createdAt: Date.now(),
-                            updatedAt: Date.now(),
-                        },
-                    ],
-                })),
+                set((state) => {
+                    const now = Date.now();
+                    return {
+                        todos: [
+                            ...state.todos,
+                            {
+                                id: Math.random().toString(36).substring(2, 11),
+                                text: params.text,
+                                estimate: params.estimate,
+                                quadrant: params.quadrant || 'inbox',
+                                status: params.status || 'todo',
+                                energy: params.energy || 'energy-medium',
+                                repetition: params.repetition || [],
+                                context: params.context || [],
+                                tags: params.tags || [],
+                                description: params.description || '',
+                                createdAt: now,
+                                updatedAt: now,
+                            },
+                        ],
+                    };
+                }),
 
             updateTodo: (id, text, estimate) =>
                 set((state) => ({
@@ -131,12 +132,13 @@ export const useTodoStore = create<TodoState>()(
 
             updateTodoRanks: (updates) =>
                 set((state) => {
+                    const now = Date.now();
                     const newTodos = [...state.todos];
                     updates.forEach(({ id, rank }) => {
                         const todo = newTodos.find(t => t.id === id);
                         if (todo) {
                             todo.priorityRank = rank;
-                            todo.updatedAt = Date.now();
+                            todo.updatedAt = now;
                         }
                     });
                     return { todos: newTodos };
@@ -146,7 +148,6 @@ export const useTodoStore = create<TodoState>()(
                 const dataStr = JSON.stringify(get().todos, null, 2);
                 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
                 const exportFileDefaultName = `priority-matrix-backup-${new Date().toISOString().split('T')[0]}.json`;
-                
                 const linkElement = document.createElement('a');
                 linkElement.setAttribute('href', dataUri);
                 linkElement.setAttribute('download', exportFileDefaultName);
@@ -160,7 +161,6 @@ export const useTodoStore = create<TodoState>()(
                         try {
                             const json = JSON.parse(e.target?.result as string);
                             if (Array.isArray(json)) {
-                                // 기존 데이터와 병합하거나 대체 (사용자 모달에서 컨펌을 받았으므로 대체)
                                 set({ todos: json, updatedAt: Date.now() } as any);
                                 resolve();
                             } else {
@@ -181,24 +181,37 @@ export const useTodoStore = create<TodoState>()(
                     if (!response.ok) throw new Error('DB 불러오기 실패');
                     const dbTodos = await response.json();
                     
-                    const currentTodos = get().todos || [];
+                    const localTodos = get().todos || [];
 
                     if (Array.isArray(dbTodos)) {
-                        const mergedMap = new Map();
-                        dbTodos.forEach((dbTodo: any) => {
-                            const dbUpdatedAt = dbTodo.updatedAt ? new Date(dbTodo.updatedAt).getTime() : 0;
-                            mergedMap.set(dbTodo.id, { ...dbTodo, updatedAt: dbUpdatedAt });
+                        /* 
+                           [최신 데이터 우선 병합 로직]
+                           1. 로컬과 온라인의 모든 아이디를 합칩니다.
+                           2. 중복되는 아이디는 updatedAt(없으면 createdAt)이 더 큰 것이 이깁니다.
+                        */
+                        const mergedMap = new Map<string, Todo>();
+                        
+                        // DB 데이터 셋팅
+                        dbTodos.forEach((dbItem: any) => {
+                            const dbTime = dbItem.updatedAt ? new Date(dbItem.updatedAt).getTime() : (dbItem.createdAt ? new Date(dbItem.createdAt).getTime() : 0);
+                            mergedMap.set(dbItem.id, { ...dbItem, updatedAt: dbTime, createdAt: dbItem.createdAt ? new Date(dbItem.createdAt).getTime() : Date.now() });
                         });
                         
-                        currentTodos.forEach(localTodo => {
-                            const dbItem = mergedMap.get(localTodo.id);
-                            if (!dbItem || (localTodo.updatedAt || 0) > dbItem.updatedAt) {
-                                mergedMap.set(localTodo.id, localTodo);
+                        // 로컬 데이터 병합
+                        localTodos.forEach(localItem => {
+                            const localTime = localItem.updatedAt || localItem.createdAt || 0;
+                            const dbItem = mergedMap.get(localItem.id);
+                            
+                            // 로컬이 없거나 로컬이 더 최신이면 채택
+                            if (!dbItem || localTime > dbItem.updatedAt) {
+                                mergedMap.set(localItem.id, localItem);
                             }
                         });
                         
-                        const mergedTodos = Array.from(mergedMap.values());
-                        set({ todos: mergedTodos, lastSyncTime: new Date().toLocaleString() });
+                        const finalists = Array.from(mergedMap.values());
+                        console.log('📡 syncFromDB: Sync Complete', { db: dbTodos.length, local: localTodos.length, final: finalists.length });
+                        
+                        set({ todos: finalists, lastSyncTime: new Date().toLocaleString() });
                     }
                 } catch (err) {
                     console.error('📡 syncFromDB Exception:', err);
