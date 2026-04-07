@@ -25,9 +25,9 @@ export default function SyncManager() {
     }
   }, [status]);
 
-  // 2. 데이터 변경 시 DB에 자동 저장 (Debounced logic could be added here)
+  // 2. 데이터 변경 시 DB에 자동 저장
   useEffect(() => {
-    if (status === "authenticated" && !isSyncing && todos.length > 0) {
+    if (status === "authenticated" && !isSyncing) {
       const timer = setTimeout(() => {
         syncToDB().catch(err => console.error("Auto Sync Error:", err));
       }, 2000); // 2초 뒤 자동 저장

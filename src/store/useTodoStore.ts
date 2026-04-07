@@ -128,10 +128,11 @@ export const useTodoStore = create<TodoState>()(
             },
 
             syncFromDB: async () => {
-                console.log('📡 syncFromDB: Requesting /api/todos...');
+                console.log('📡 syncFromDB: Requesting /api/todos (No-Cache)...');
                 set({ isSyncing: true });
                 try {
-                    const response = await fetch('/api/todos');
+                    // 캐시 버스팅 적용하여 항상 최신 데이터 강제 로드
+                    const response = await fetch(`/api/todos?t=${Date.now()}`);
                     console.log('📡 syncFromDB response:', response.status);
                     if (!response.ok) {
                         const errorText = await response.text();
