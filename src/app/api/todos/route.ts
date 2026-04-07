@@ -18,9 +18,13 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(todos);
-  } catch (error) {
-    console.error("Fetch Error:", error);
-    return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 });
+  } catch (error: any) {
+    console.error("❌ Fetch Error Details:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta
+    });
+    return NextResponse.json({ error: "Failed to fetch todos", details: error.message }, { status: 500 });
   }
 }
 
@@ -69,8 +73,12 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Sync Error:", error);
-    return NextResponse.json({ error: "Failed to sync todos" }, { status: 500 });
+  } catch (error: any) {
+    console.error("❌ Sync Error Details:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta
+    });
+    return NextResponse.json({ error: "Failed to sync todos", details: error.message }, { status: 500 });
   }
 }
