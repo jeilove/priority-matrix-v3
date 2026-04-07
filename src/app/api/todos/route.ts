@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
             description: todo.description,
             priorityRank: todo.priorityRank ?? 9999,
             isHidden: todo.isHidden ?? false,
+            updatedAt: todo.updatedAt ? new Date(todo.updatedAt) : undefined,
           },
           create: {
             id: todo.id,
@@ -101,6 +102,8 @@ export async function POST(req: NextRequest) {
             description: todo.description,
             priorityRank: todo.priorityRank ?? 9999,
             isHidden: todo.isHidden ?? false,
+            createdAt: todo.createdAt ? new Date(todo.createdAt) : undefined,
+            updatedAt: todo.updatedAt ? new Date(todo.updatedAt) : undefined,
           },
         });
       }
