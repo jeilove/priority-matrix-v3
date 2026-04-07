@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { initGoogleAuth, uploadTodos, downloadTodos } from '@/utils/googleSyncEngine';
 
 export type QuadrantType = 'q1' | 'q2' | 'q3' | 'q4' | 'inbox' | 'unassigned';
 export type EnergyType = 'energy-high' | 'energy-medium' | 'energy-low';
@@ -141,7 +140,8 @@ export const useTodoStore = create<TodoState>()(
                     }
                     const dbTodos = await response.json();
                     console.log('📡 syncFromDB count:', Array.isArray(dbTodos) ? dbTodos.length : 'Not Array');
-                    if (Array.isArray(dbTodos) && dbTodos.length > 0) {
+                    if (Array.isArray(dbTodos)) {
+                        // DB 데이터로 항상 덮어씀 (빈 배열이어도 반영)
                         set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
                     }
                 } catch (err) {
@@ -185,38 +185,13 @@ export const useTodoStore = create<TodoState>()(
                 });
             },
 
+            // 구 구글 드라이브 동기화 - 현재 미사용 (Neon DB로 대체)
             syncToCloud: async () => {
-                const clientId = localStorage.getItem('google_client_id');
-                if (!clientId) throw new Error('Client ID가 없습니다.');
-                set({ isSyncing: true });
-                try {
-                    await initGoogleAuth(clientId);
-                    await uploadTodos((useTodoStore.getState() as any).todos);
-                    set({ lastSyncTime: new Date().toLocaleString() });
-                    alert('성공적으로 클라우드에 저장되었습니다!');
-                } catch (err: any) {
-                    alert('저장 실패: ' + err.message);
-                } finally {
-                    set({ isSyncing: false });
-                }
+                console.warn('syncToCloud: 사용 중단됨. Neon DB 자동 동기화를 이용하세요.');
             },
 
             syncFromCloud: async () => {
-                const clientId = localStorage.getItem('google_client_id');
-                if (!clientId) throw new Error('Client ID가 없습니다.');
-                set({ isSyncing: true });
-                try {
-                    await initGoogleAuth(clientId);
-                    const cloudTodos = await downloadTodos();
-                    if (Array.isArray(cloudTodos)) {
-                        set({ todos: cloudTodos, lastSyncTime: new Date().toLocaleString() });
-                        alert('클라우드에서 데이터를 성공적으로 가져왔습니다!');
-                    }
-                } catch (err: any) {
-                    alert('가져오기 실패: ' + err.message);
-                } finally {
-                    set({ isSyncing: false });
-                }
+                console.warn('syncFromCloud: 사용 중단됨. Neon DB 자동 동기화를 이용하세요.');
             },
 
             addTodo: (params) =>
