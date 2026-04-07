@@ -322,6 +322,14 @@ const DroppableQuadrant = ({ q, todos, onDoubleClick }: { q: any; todos: Todo[];
 
 const QuadrantGrid = () => {
   const { todos } = useTodoStore();
+  const [mounted, setMounted] = React.useState(false);
+
+  // 클라이언트 하이드레이션 완료 후에만 실제 데이터를 렌더링
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div className="grid-wrapper">

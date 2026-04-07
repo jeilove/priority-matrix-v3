@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 import { initGoogleAuth, uploadTodos, downloadTodos } from '@/utils/googleSyncEngine';
 
 export type QuadrantType = 'q1' | 'q2' | 'q3' | 'q4' | 'inbox' | 'unassigned';
-// ... 나머지 타입들 동일
 export type EnergyType = 'energy-high' | 'energy-medium' | 'energy-low';
 export type StatusType = 'todo' | 'in-progress' | 'done' | 'blocked';
 export type RepetitionType = 'once' | 'daily' | 'weekly' | 'monthly';
@@ -17,16 +16,13 @@ export interface Todo {
     quadrant: QuadrantType;
     createdAt: number;
     isHidden?: boolean;
-
-    // 추가 필드
     energy?: EnergyType;
-    status: StatusType; // 기본값 'todo'
+    status: StatusType;
     repetition?: RepetitionType[];
     context?: ContextType[];
     tags?: string[];
     description?: string;
-
-    priorityRank?: number; // 중요도 및 시급성 순위
+    priorityRank?: number;
     prevQuadrant?: QuadrantType;
 }
 
@@ -34,7 +30,7 @@ interface TodoState {
     todos: Todo[];
     isSyncing: boolean;
     lastSyncTime: string | null;
-    
+
     addTodo: (todo: Partial<Todo> & { text: string; estimate: string }) => void;
     updateTodo: (id: string, text: string, estimate: string) => void;
     fullUpdateTodo: (id: string, updates: Partial<Todo>) => void;
@@ -43,32 +39,57 @@ interface TodoState {
     moveTodoAndHide: (id: string, quadrant: QuadrantType) => void;
     deleteTodo: (id: string) => void;
     clearInbox: () => void;
-    // 정렬 관련
+
     sortOrder: SortOrderType;
     setSortOrder: (order: SortOrderType) => void;
-    // 동기화 관련
+
     setTodos: (todos: Todo[]) => void;
     setSyncStatus: (isSyncing: boolean, lastSyncTime?: string) => void;
     syncToCloud: () => Promise<void>;
     syncFromCloud: () => Promise<void>;
-    // 로컬 파일 백업/복구
+
     exportTodos: () => void;
     importTodos: (file: File) => Promise<void>;
-    // 순위(랭킹) 업데이트
+
     updateTodoRanks: (updates: { id: string; rank: number }[]) => void;
-    
-    // DB 동기화 관련
+
     syncToDB: () => Promise<void>;
     syncFromDB: () => Promise<void>;
-    
-    // 초기화 및 복구
+
     ensureGuideTodos: () => void;
 }
+
+const GUIDE_TODOS: Todo[] = [
+    {
+        id: 'guide-1',
+        text: '🚀 환영합니다! 중앙의 +를 눌러 할일을 추가하세요',
+        estimate: '1m',
+        quadrant: 'q1',
+        status: 'todo',
+        createdAt: Date.now(),
+    },
+    {
+        id: 'guide-2',
+        text: '🎯 중요하고 긴급한 일은 Q1(당장해)입니다',
+        estimate: '5m',
+        quadrant: 'q1',
+        status: 'todo',
+        createdAt: Date.now() - 1000,
+    },
+    {
+        id: 'guide-3',
+        text: '📌 중요하지만 급하지 않은 일은 Q2(살펴봐)입니다',
+        estimate: '2m',
+        quadrant: 'q2',
+        status: 'todo',
+        createdAt: Date.now() - 2000,
+    }
+];
 
 export const useTodoStore = create<TodoState>()(
     persist(
         (set, get) => ({
-            todos: [], // 초기값은 비워두고 persist 후 체크
+            todos: [],
             sortOrder: 'recent',
             isSyncing: false,
             lastSyncTime: null,
@@ -76,47 +97,17 @@ export const useTodoStore = create<TodoState>()(
             ensureGuideTodos: () => {
                 const currentTodos = get().todos;
                 const isEmpty = !Array.isArray(currentTodos) || currentTodos.length === 0;
-                console.log("🛠 ensureGuideTodos: Current Todos Check", { count: currentTodos?.length, isEmpty });
-                
+                console.log('🛠 ensureGuideTodos:', { count: currentTodos?.length, isEmpty });
                 if (isEmpty) {
-                    console.log("🛠 ensureGuideTodos: Creating guide data...");
-                    // ... guide data creation same as before
-                    set({
-                        todos: [
-                            {
-                                id: 'guide-1',
-                                text: '🚀 환영합니다! 중앙의 +를 눌러 첫 할일을 만들어보세요',
-                                estimate: '1m',
-                                quadrant: 'unassigned',
-                                status: 'todo',
-                                createdAt: Date.now(),
-                            },
-                            {
-                                id: 'guide-2',
-                                text: '🎯 중요하고 긴급한 일은 Q1(당장해)으로 드래그하세요',
-                                estimate: '5m',
-                                quadrant: 'q1',
-                                status: 'todo',
-                                createdAt: Date.now() - 1000,
-                            },
-                            {
-                                id: 'guide-3',
-                                text: '✅ 완료된 일은 자동으로 보관함(Inbox)으로 이동합니다',
-                                estimate: '2m',
-                                quadrant: 'inbox',
-                                status: 'done',
-                                createdAt: Date.now() - 2000,
-                            }
-                        ]
-                    });
+                    console.log('🛠 ensureGuideTodos: Creating guide data...');
+                    set({ todos: GUIDE_TODOS });
                 }
             },
 
             setSortOrder: (order) => set({ sortOrder: order }),
             setTodos: (todos) => set({ todos }),
             setSyncStatus: (isSyncing, lastSyncTime) => set({ isSyncing, lastSyncTime: lastSyncTime || new Date().toLocaleString() }),
-            
-            // DB 동기화 (Neon)
+
             syncToDB: async () => {
                 set({ isSyncing: true });
                 try {
@@ -125,10 +116,11 @@ export const useTodoStore = create<TodoState>()(
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ todos: get().todos }),
                     });
+                    console.log('📡 syncToDB response:', response.status);
                     if (!response.ok) throw new Error('DB 저장 실패');
                     set({ lastSyncTime: new Date().toLocaleString() });
                 } catch (err) {
-                    console.error('DB Sync Error:', err);
+                    console.error('📡 syncToDB Error:', err);
                     throw err;
                 } finally {
                     set({ isSyncing: false });
@@ -136,28 +128,23 @@ export const useTodoStore = create<TodoState>()(
             },
 
             syncFromDB: async () => {
-                console.log("📡 useTodoStore: Requesting /api/todos...");
+                console.log('📡 syncFromDB: Requesting /api/todos...');
                 set({ isSyncing: true });
                 try {
                     const response = await fetch('/api/todos');
-                    console.log("📡 useTodoStore: DB Response Status:", response.status);
+                    console.log('📡 syncFromDB response:', response.status);
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error("📡 useTodoStore: DB Error Response:", errorText);
+                        console.error('📡 syncFromDB Error Response:', errorText);
                         throw new Error('DB 불러오기 실패: ' + errorText);
                     }
                     const dbTodos = await response.json();
-                    console.log("📡 useTodoStore: Fetched DB Todos count:", Array.isArray(dbTodos) ? dbTodos.length : 'Not Array');
-                    if (Array.isArray(dbTodos)) {
-                        if (dbTodos.length > 0) {
-                            set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
-                            console.log("📡 useTodoStore: Store updated with DB data.");
-                        } else {
-                            console.log("📡 useTodoStore: DB is empty, keeping local data.");
-                        }
+                    console.log('📡 syncFromDB count:', Array.isArray(dbTodos) ? dbTodos.length : 'Not Array');
+                    if (Array.isArray(dbTodos) && dbTodos.length > 0) {
+                        set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
                     }
                 } catch (err) {
-                    console.error('📡 useTodoStore: DB Sync Exception:', err);
+                    console.error('📡 syncFromDB Exception:', err);
                     throw err;
                 } finally {
                     set({ isSyncing: false });
@@ -196,10 +183,10 @@ export const useTodoStore = create<TodoState>()(
                     reader.readAsText(file);
                 });
             },
+
             syncToCloud: async () => {
                 const clientId = localStorage.getItem('google_client_id');
                 if (!clientId) throw new Error('Client ID가 없습니다.');
-                
                 set({ isSyncing: true });
                 try {
                     await initGoogleAuth(clientId);
@@ -212,10 +199,10 @@ export const useTodoStore = create<TodoState>()(
                     set({ isSyncing: false });
                 }
             },
+
             syncFromCloud: async () => {
                 const clientId = localStorage.getItem('google_client_id');
                 if (!clientId) throw new Error('Client ID가 없습니다.');
-                
                 set({ isSyncing: true });
                 try {
                     await initGoogleAuth(clientId);
@@ -230,6 +217,7 @@ export const useTodoStore = create<TodoState>()(
                     set({ isSyncing: false });
                 }
             },
+
             addTodo: (params) =>
                 set((state) => ({
                     todos: [
@@ -249,29 +237,27 @@ export const useTodoStore = create<TodoState>()(
                         },
                     ],
                 })),
+
             updateTodo: (id, text, estimate) =>
                 set((state) => ({
                     todos: state.todos.map((todo) =>
                         todo.id === id ? { ...todo, text, estimate } : todo
                     ),
                 })),
+
             fullUpdateTodo: (id, updates) =>
                 set((state) => ({
                     todos: state.todos.map((todo) => {
                         if (todo.id !== id) return todo;
-                        
                         const newStatus = updates.status || todo.status;
                         let newQuadrant = updates.quadrant || todo.quadrant;
                         let newPrevQuadrant = todo.prevQuadrant;
 
-                        // 상태가 마침/중단으로 바뀐 경우
                         if ((newStatus === 'done' || newStatus === 'blocked') && newQuadrant !== 'inbox') {
                             newPrevQuadrant = todo.quadrant;
                             newQuadrant = 'inbox';
-                        }
-                        // 마침/중단에서 다시 복구된 경우
-                        else if ((todo.status === 'done' || todo.status === 'blocked') && 
-                                 (newStatus === 'todo' || newStatus === 'in-progress')) {
+                        } else if ((todo.status === 'done' || todo.status === 'blocked') &&
+                                   (newStatus === 'todo' || newStatus === 'in-progress')) {
                             if (todo.prevQuadrant) {
                                 newQuadrant = todo.prevQuadrant;
                                 newPrevQuadrant = undefined;
@@ -279,66 +265,59 @@ export const useTodoStore = create<TodoState>()(
                                 newQuadrant = 'unassigned';
                             }
                         }
-
                         return { ...todo, ...updates, quadrant: newQuadrant, prevQuadrant: newPrevQuadrant };
                     }),
                 })),
+
             updateTodoStatus: (id, status) =>
                 set((state) => ({
                     todos: state.todos.map((todo) => {
                         if (todo.id !== id) return todo;
-
                         let newQuadrant = todo.quadrant;
                         let newPrevQuadrant = todo.prevQuadrant;
 
-                        // 마침(done) 또는 중단(blocked) 상태로 변경 시 inbox로 이동
                         if (status === 'done' || status === 'blocked') {
                             if (todo.quadrant !== 'inbox') {
                                 newPrevQuadrant = todo.quadrant;
                                 newQuadrant = 'inbox';
                             }
-                        } 
-                        // 마침/중단에서 다시 준비/진행으로 변경 시 이전 사분면으로 복구
-                        else if ((todo.status === 'done' || todo.status === 'blocked') && 
-                                 (status === 'todo' || status === 'in-progress')) {
+                        } else if ((todo.status === 'done' || todo.status === 'blocked') &&
+                                   (status === 'todo' || status === 'in-progress')) {
                             if (todo.prevQuadrant) {
                                 newQuadrant = todo.prevQuadrant;
                                 newPrevQuadrant = undefined;
                             } else if (todo.quadrant === 'inbox') {
-                                // 이전 사분면 정보가 없는데 inbox에 있었다면 unassigned로 복구
                                 newQuadrant = 'unassigned';
                             }
                         }
-
-                        return { 
-                            ...todo, 
-                            status, 
-                            quadrant: newQuadrant, 
-                            prevQuadrant: newPrevQuadrant,
-                            isHidden: false 
-                        };
+                        return { ...todo, status, quadrant: newQuadrant, prevQuadrant: newPrevQuadrant, isHidden: false };
                     }),
                 })),
+
             moveTodo: (id, quadrant) =>
                 set((state) => ({
                     todos: state.todos.map((todo) =>
                         todo.id === id ? { ...todo, quadrant, isHidden: false, prevQuadrant: undefined } : todo
                     ),
                 })),
+
             moveTodoAndHide: (id, quadrant) =>
                 set((state) => ({
                     todos: state.todos.map((todo) =>
                         todo.id === id ? { ...todo, quadrant, isHidden: true, prevQuadrant: undefined } : todo
                     ),
                 })),
+
             deleteTodo: (id) =>
                 set((state) => ({
                     todos: state.todos.filter((todo) => todo.id !== id),
                 })),
+
             clearInbox: () =>
                 set((state) => ({
                     todos: state.todos.filter((todo) => todo.quadrant !== 'inbox'),
                 })),
+
             updateTodoRanks: (updates) =>
                 set((state) => ({
                     todos: state.todos.map((todo) => {
@@ -349,8 +328,7 @@ export const useTodoStore = create<TodoState>()(
         }),
         {
             name: 'eisenhower-todos',
-            onRehydrateStorage: (state) => {
-                // 저장소 데이터 로딩(Rehydration) 직후 실행
+            onRehydrateStorage: () => {
                 console.log('📦 useTodoStore: Rehydration checking...');
                 return (rehydratedState, error) => {
                     if (error) {
