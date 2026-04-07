@@ -76,8 +76,8 @@ const CircleInput = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const { todos, addTodo } = useTodoStore();
-  const unassignedTodos = todos.filter(t => t.quadrant === 'unassigned');
-  const currentTodo = unassignedTodos[unassignedTodos.length - 1 - currentIndex];
+  const inboxTodos = todos.filter(t => t.quadrant === 'inbox');
+  const currentTodo = inboxTodos[inboxTodos.length - 1 - currentIndex];
 
   const handleNextStage = () => {
     if (todoText.trim()) {
@@ -88,7 +88,7 @@ const CircleInput = () => {
   const handleSave = () => {
     if (todoText.trim()) {
       const finalEstimate = estimate.trim() || '0.5';
-      addTodo({ text: todoText, estimate: finalEstimate, quadrant: 'unassigned' });
+      addTodo({ text: todoText, estimate: finalEstimate, quadrant: 'inbox' });
       setTodoText('');
       setEstimate('');
       setIsInputMode(false);
@@ -105,15 +105,15 @@ const CircleInput = () => {
     }
   };
 
-  const nextTodo = () => {
-    if (currentIndex < unassignedTodos.length - 1) {
-      setCurrentIndex(prev => prev + 1);
+  const handlePrev = () => {
+    if (currentIndex < inboxTodos.length - 1) {
+      setCurrentIndex(currentIndex + 1);
     }
   };
 
-  const prevTodo = () => {
+  const handleNext = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1);
+      setCurrentIndex(currentIndex - 1);
     }
   };
 
@@ -126,7 +126,7 @@ const CircleInput = () => {
           title="할 일 추가 및 미분류 확인"
         >
           <Plus size={32} color="var(--accent-color)" />
-          {unassignedTodos.length > 0 && <span className="inbox-notification">{unassignedTodos.length}</span>}
+          {inboxTodos.length > 0 && <span className="inbox-notification">{inboxTodos.length}</span>}
         </button>
       ) : (
         <div className="main-input-box glass expanded-box">
@@ -139,11 +139,11 @@ const CircleInput = () => {
               {currentTodo ? (
                 <div className="active-todo-display">
                   <div className="todo-nav-container">
-                    {unassignedTodos.length > 1 && (
+                    {inboxTodos.length > 1 && (
                       <button
                         className="nav-arrow-btn"
-                        onClick={nextTodo}
-                        disabled={currentIndex === unassignedTodos.length - 1}
+                        onClick={handlePrev}
+                        disabled={currentIndex === inboxTodos.length - 1}
                       >
                         <ChevronLeft size={24} />
                       </button>
@@ -151,10 +151,10 @@ const CircleInput = () => {
 
                     <DraggableTodo todo={currentTodo} />
 
-                    {unassignedTodos.length > 1 && (
+                    {inboxTodos.length > 1 && (
                       <button
                         className="nav-arrow-btn"
-                        onClick={prevTodo}
+                        onClick={handleNext}
                         disabled={currentIndex === 0}
                       >
                         <ChevronRight size={24} />
@@ -186,14 +186,19 @@ const CircleInput = () => {
                   title="새 할 일 추가"
                 >
                   <Plus size={28} />
+                  <div className="inbox-badge-wrapper" onClick={() => setIsExpanded(!isExpanded)}>
+                    <div className="inbox-badge">
+                      <span className="inbox-count">{inboxTodos.length}</span>
+                    </div>
+                  </div>
                   <span>할 일 추가</span>
                 </button>
               )}
               <div className="inbox-status">
-                <span className="count-badge">{unassignedTodos.length}</span>
+                <span className="count-badge">{inboxTodos.length}</span>
                 <span className="status-text">미분류 할 일</span>
-                {unassignedTodos.length > 1 && (
-                  <span className="index-indicator">({currentIndex + 1} / {unassignedTodos.length})</span>
+                {inboxTodos.length > 1 && (
+                  <span className="index-indicator">({currentIndex + 1} / {inboxTodos.length})</span>
                 )}
               </div>
             </div>

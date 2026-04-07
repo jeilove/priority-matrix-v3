@@ -171,9 +171,10 @@ export const useTodoStore = create<TodoState>()(
             exportTodos: () => {
                 const dataStr = JSON.stringify(get().todos, null, 2);
                 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = `pm-backup-${new Date().getTime()}.json`;
                 const linkElement = document.createElement('a');
                 linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', `backup-${new Date().getTime()}.json`);
+                linkElement.setAttribute('download', exportFileDefaultName);
                 linkElement.click();
             },
 
@@ -187,7 +188,7 @@ export const useTodoStore = create<TodoState>()(
                                 set({ todos: json, lastModifiedAt: Date.now() });
                                 resolve();
                             } else {
-                                throw new Error('Invalid JSON');
+                                throw new Error('올바른 형식이 아닙니다.');
                             }
                         } catch (err) {
                             reject(err);
@@ -199,38 +200,46 @@ export const useTodoStore = create<TodoState>()(
 
             syncFromDB: async () => {
                 try {
-                    console.log('📡 syncFromDB: Fetching Snapshots...');
-                    const response = await fetch(`/api/todos?t=${Date.now()}`);
-                    if (!response.ok) throw new Error('DB fetch failed');
-                    const dbData = await response.json();
+                    console.log('📡 syncFromDB: Fetching from Cloud...');
+                    const res = await fetch(`/api/todos?t=${Date.now()}`);
+                    if (!res.ok) throw new Error('Fetch failed');
+                    const dbData = await res.json();
                     
                     if (!Array.isArray(dbData)) return;
 
                     const localTodos = get().todos || [];
                     const localModified = Number(get().lastModifiedAt) || 0;
                     
-                    const dbDataWithTimes = dbData.map(t => ({
+                    const dbTodos = dbData.map(t => ({
                         ...t,
                         updatedAt: t.updatedAt ? new Date(t.updatedAt).getTime() : 0,
                         createdAt: t.createdAt ? new Date(t.createdAt).getTime() : 0
                     }));
 
-                    const dbMaxModified = dbDataWithTimes.length > 0 
-                        ? Math.max(...dbDataWithTimes.map(t => t.updatedAt)) 
+                    const dbMaxModified = dbTodos.length > 0 
+                        ? Math.max(...dbTodos.map(t => t.updatedAt)) 
                         : 0;
 
-                    console.log('📡 syncFromDB Time Check:', { db: dbMaxModified, local: localModified });
+                    console.log('📡 syncFromDB Check:', { 
+                        DB: { time: dbMaxModified, count: dbTodos.length }, 
+                        PC: { time: localModified, count: localTodos.length } 
+                    });
 
-                    // [최신성 절대 승리 원칙]
-                    // 1. 온라인(DB)이 더 최근이면 온라인 승리
-                    // 2. 시간은 같지만 로컬에 데이터가 없고 온라인에는 있다면 온라인 승리 (0개/N개 꼬임 방지)
-                    if (dbMaxModified > localModified || (dbMaxModified === localModified && localTodos.length === 0 && dbDataWithTimes.length > 0)) {
-                        console.log('📡 syncFromDB: Online is Master. Updating Local.');
-                        set({ todos: dbDataWithTimes, lastModifiedAt: dbMaxModified, lastSyncTime: new Date().toLocaleString() });
-                    } else if (localModified > dbMaxModified) {
-                        console.log('📡 syncFromDB: Local is Master. Will sync to DB soon.');
+                    // [클린 동기화 판별]
+                    // 1. 온라인(DB)이 시간이 더 늦다면 (최신 활동) -> DB 승리
+                    // 2. 시간은 똑같지만, DB에는 데이터가 있고 PC가 비어있다면 -> DB 승리 (방금 상황 해결)
+                    const shouldLoadDB = (dbMaxModified > localModified) || 
+                                       (dbMaxModified === localModified && dbTodos.length > localTodos.length);
+
+                    if (shouldLoadDB) {
+                        console.log('📡 syncFromDB: Loading DB data to Local Store.');
+                        set({ 
+                            todos: dbTodos, 
+                            lastModifiedAt: dbMaxModified,
+                            lastSyncTime: new Date().toLocaleString() 
+                        });
                     } else {
-                        console.log('📡 syncFromDB: Already synced.');
+                        console.log('📡 syncFromDB: Local is up-to-date.');
                     }
                 } catch (err) {
                     console.error('❌ syncFromDB Error:', err);
@@ -247,9 +256,8 @@ export const useTodoStore = create<TodoState>()(
                         body: JSON.stringify({ todos: get().todos }),
                     });
 
-                    if (!response.ok) throw new Error('DB sync failure');
-                    set({ lastSyncTime: new Date().toLocaleString() });
-                    console.log('✅ syncToDB success');
+                    if (!response.ok) throw new Error('Upload failed');
+                    console.log('✅ syncToDB success (Uploaded Count:', get().todos.length, ')');
                 } catch (err) {
                     console.error('❌ syncToDB Error:', err);
                     throw err;
@@ -261,9 +269,8 @@ export const useTodoStore = create<TodoState>()(
         {
             name: 'todo-storage',
             onRehydrateStorage: () => {
-                console.log('📦 useTodoStore: Rehydration checking...');
                 return (state) => {
-                    console.log('📦 useTodoStore: Rehydration Complete.');
+                    console.log('📦 useTodoStore: Rehydrated.');
                 };
             },
         }
