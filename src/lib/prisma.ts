@@ -1,15 +1,12 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
-import { Pool } from '@neondatabase/serverless'
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+// Prisma 7.x에서 서버리스 효율을 극대화하기 위해 글로벌 인스턴스 사용
+const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-function createPrismaClient() {
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL! })
-  const adapter = new PrismaNeon(pool as any)
-  return new PrismaClient({ adapter } as any)
-}
-
-export const prisma = globalForPrisma.prisma ?? createPrismaClient()
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    log: ['error', 'warn'],
+  })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma

@@ -349,6 +349,18 @@ export const useTodoStore = create<TodoState>()(
         }),
         {
             name: 'eisenhower-todos',
+            onRehydrateStorage: (state) => {
+                // 저장소 데이터 로딩(Rehydration) 직후 실행
+                console.log('📦 useTodoStore: Rehydration checking...');
+                return (rehydratedState, error) => {
+                    if (error) {
+                        console.error('📦 useTodoStore: Rehydration Error:', error);
+                    } else if (rehydratedState) {
+                        rehydratedState.ensureGuideTodos();
+                        console.log('📦 useTodoStore: Rehydration Complete & Guide Checked.');
+                    }
+                };
+            },
         }
     )
 );
