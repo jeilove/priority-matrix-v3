@@ -198,62 +198,28 @@ export const useTodoStore = create<TodoState>()(
                 });
             },
 
-            syncFromDB: async () => {
+            syncFromDB: async (): Promise<void> => {
                 try {
                     console.log('📡 syncFromDB: Fetching from Cloud...');
                     const res = await fetch(`/api/todos?t=${Date.now()}`);
                     if (!res.ok) throw new Error('Fetch failed');
                     const dbData = await res.json();
-                    
+
                     if (!Array.isArray(dbData)) return;
 
-                    const localTodos = get().todos || [];
-                    const localModified = Number(get().lastModifiedAt) || 0;
-                    
                     const dbTodos = dbData.map(t => ({
                         ...t,
                         updatedAt: t.updatedAt ? new Date(t.updatedAt).getTime() : 0,
                         createdAt: t.createdAt ? new Date(t.createdAt).getTime() : 0
                     }));
 
-                    const dbMaxModified = dbTodos.length > 0 
-                        ? Math.max(...dbTodos.map(t => t.updatedAt)) 
-                        : 0;
-
-                    // [ID 기반 지문(Fingerprint) 검증]
-                    // 시간뿐만 아니라 아이템 목록 자체가 다른지 확인하여 교착 상태를 방지합니다.
-                    const localFingerprint = localTodos.map(t => t.id).sort().join(',');
-                    const dbFingerprint = dbTodos.map(t => t.id).sort().join(',');
-
-                    console.log('📡 syncFromDB Status Log:', { 
-                        DB: { time: dbMaxModified, count: dbTodos.length }, 
-                        PC: { time: localModified, count: localTodos.length } 
+                    // 새로 고침 시점에는 로컬 변경이 이미 DB에 저장된 상태이므로
+                    // DB가 항상 정답 스냅샷 → 그대로 로드
+                    console.log('📡 syncFromDB: Loading DB snapshot (count:', dbTodos.length, ')');
+                    set({
+                        todos: dbTodos,
+                        lastSyncTime: new Date().toLocaleString()
                     });
-
-                    // [수정된 판별 로직]
-                    // 사용자님 의견 반영: lastModifiedAt 오염 방지 및 실질적 데이터 차이 감지
-                    const isRemoteNewer = dbMaxModified > localModified;
-                    const isContentDifferent = localFingerprint !== dbFingerprint;
-
-                    if (isRemoteNewer || isContentDifferent) {
-                        console.log('📡 syncFromDB: Potential change detected. Comparing...');
-                        
-                        // 만약 로컬 시각이 서버보다 늦다면(사용자가 방금 PC에서 수정함), 서버 데이터를 덮어쓰지 않고 대기합니다.
-                        // (잠시 후 syncToDB가 이 새로운 데이터를 서버로 올릴 것입니다.)
-                        if (localModified > dbMaxModified && localTodos.length > 0) {
-                            console.log('📡 syncFromDB: Local is Master. Waiting for Auto-Save.');
-                        } else {
-                            console.log('📡 syncFromDB: Loading Remote Snapshot.');
-                            set({ 
-                                todos: dbTodos, 
-                                // 주의: 여기서 lastModifiedAt을 dbMaxModified로 맞추지 않습니다.
-                                // 그래야 로컬에서 새로 작업할 때만 localModified가 올라가서 업로드 우선권을 갖게 됩니다.
-                                lastSyncTime: new Date().toLocaleString() 
-                            });
-                        }
-                    } else {
-                        console.log('📡 syncFromDB: Completely synced.');
-                    }
                 } catch (err) {
                     console.error('❌ syncFromDB Error:', err);
                     throw err;
