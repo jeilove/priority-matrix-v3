@@ -3,22 +3,39 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function GET() {
-  const session = await getServerSession(authOptions);
-  const user = session?.user as any;
-  if (!user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export async function GET(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { email } = session.user;
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const todos = await prisma.todo.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(todos);
+
+    console.log("✅ API[GET]: Fetching todos for", user.id, "(count:", todos.length, ")");
+    
+    return NextResponse.json(todos, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
+      }
+    });
   } catch (error: any) {
     const errorDetail = error.message || String(error);
     console.error("❌ API[GET] Fetch Error:", errorDetail);
