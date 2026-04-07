@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Home as HomeIcon, Settings } from 'lucide-react';
+import { Home as HomeIcon, Settings, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
+  const { data: session } = useSession();
+
   return (
     <header className="fixed-nav">
       <div className="nav-icons">
@@ -15,7 +18,25 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
           <img src="/logo_final_v2.png" alt="해줘봐요" className="nav-logo-img" />
         </Link>
 
-        <span className="version-badge">v2.9.0</span>
+        <span className="version-badge">v3.1.6</span>
+
+        {session ? (
+          <div className="user-profile">
+            {session.user?.image ? (
+              <img src={session.user.image} alt="User" className="user-avatar" title={session.user.name || 'User'} />
+            ) : (
+              <span className="user-initial">{session.user?.name?.[0] || 'U'}</span>
+            )}
+            <button className="nav-icon-link logout-btn" onClick={() => signOut()} title="로그아웃">
+              <LogOut size={24} />
+            </button>
+          </div>
+        ) : (
+          <button className="nav-icon-link login-btn" onClick={() => signIn('google')} title="구글 로그인">
+            <LogIn size={24} />
+          </button>
+        )}
+
         <button 
           className="nav-icon-link settings-trigger" 
           title="설정"
@@ -36,8 +57,8 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
         .nav-icons {
           display: flex;
           align-items: center;
-          gap: 24px;
-          padding: 10px 24px;
+          gap: 16px;
+          padding: 8px 16px;
           background: rgba(255, 255, 255, 0.03);
           border: 1px solid rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(12px);
@@ -75,8 +96,36 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
           filter: grayscale(0) brightness(1);
           transform: scale(1.1);
         }
-        .settings-trigger {
-          padding: 0;
+        .user-profile {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding-right: 8px;
+          border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .user-initial {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-weight: bold;
+        }
+        .version-badge {
+          font-size: 10px;
+          color: rgba(255, 255, 255, 0.3);
+          padding: 2px 6px;
+          background: rgba(255, 255, 255, 0.05);
+          border-radius: 4px;
         }
       `}</style>
     </header>

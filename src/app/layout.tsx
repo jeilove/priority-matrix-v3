@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import AuthProvider from '@/components/providers/AuthProvider';
+import SyncManager from '@/components/providers/SyncManager';
 
 export const metadata: Metadata = {
     title: 'Priority Matrix - AI 아이젠하워 매트릭스',
@@ -14,9 +16,10 @@ export default function RootLayout({
     return (
         <html lang="ko">
             <body>
-                {children}
-                <script src="https://accounts.google.com/gsi/client" async defer></script>
-                <script src="https://apis.google.com/js/api.js" async defer></script>
+                <AuthProvider>
+                    <SyncManager />
+                    {children}
+                </AuthProvider>
             </body>
         </html>
     );

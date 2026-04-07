@@ -56,6 +56,10 @@ interface TodoState {
     importTodos: (file: File) => Promise<void>;
     // 순위(랭킹) 업데이트
     updateTodoRanks: (updates: { id: string; rank: number }[]) => void;
+    
+    // DB 동기화 관련
+    syncToDB: () => Promise<void>;
+    syncFromDB: () => Promise<void>;
 }
 
 export const useTodoStore = create<TodoState>()(
@@ -70,6 +74,45 @@ export const useTodoStore = create<TodoState>()(
             setTodos: (todos) => set({ todos }),
             setSyncStatus: (isSyncing, lastSyncTime) => set({ isSyncing, lastSyncTime: lastSyncTime || new Date().toLocaleString() }),
             
+            // DB 동기화 (Neon)
+            syncToDB: async () => {
+                set({ isSyncing: true });
+                try {
+                    const response = await fetch('/api/todos', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ todos: get().todos }),
+                    });
+                    if (!response.ok) throw new Error('DB 저장 실패');
+                    set({ lastSyncTime: new Date().toLocaleString() });
+                } catch (err) {
+                    console.error('DB Sync Error:', err);
+                    throw err;
+                } finally {
+                    set({ isSyncing: false });
+                }
+            },
+
+            syncFromDB: async () => {
+                set({ isSyncing: true });
+                try {
+                    const response = await fetch('/api/todos');
+                    if (!response.ok) throw new Error('DB 불러오기 실패');
+                    const dbTodos = await response.json();
+                    if (Array.isArray(dbTodos)) {
+                        // DB 데이터가 비어있지 않은 경우에만 업데이트
+                        if (dbTodos.length > 0) {
+                            set({ todos: dbTodos, lastSyncTime: new Date().toLocaleString() });
+                        }
+                    }
+                } catch (err) {
+                    console.error('DB Fetch Error:', err);
+                    throw err;
+                } finally {
+                    set({ isSyncing: false });
+                }
+            },
+
             exportTodos: () => {
                 const data = JSON.stringify(get().todos, null, 2);
                 const blob = new Blob([data], { type: 'application/json' });
