@@ -32,21 +32,26 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   const user = session?.user as any;
+  
+  console.log("📡 API[POST]: Sync Request received", { userId: user?.id, email: user?.email });
+
   if (!user?.id) {
+    console.warn("⚠️ API[POST]: Unauthorized request (no user.id)");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
     const { todos } = await req.json();
+    console.log(`📡 API[POST]: Syncing ${todos.length} items for user ${user.id}`);
     
-    // 1. 유저 존재 확인 및 동기화 (PrismaAdapter를 사용하지 않으므로 여기서 직접 처리)
+    // 1. 유저 존재 확인 및 동기화
     await prisma.user.upsert({
       where: { id: user.id },
       update: { name: user.name, email: user.email, image: user.image },
       create: { id: user.id, name: user.name, email: user.email, image: user.image }
     });
 
-    // 2. 현재 DB에 저장된 ID 리스트 확보
+    // 2. ID 리스트 확보
     const existingTodos = await prisma.todo.findMany({
       where: { userId: user.id },
       select: { id: true }
@@ -54,15 +59,16 @@ export async function POST(req: NextRequest) {
     const existingIds = existingTodos.map(t => t.id);
     const newIds = todos.map((t: any) => t.id);
 
-    // 3. 로컬에 없는 데이터는 DB에서 삭제
+    // 3. 존재하지 않는 항목 삭제
     const toDelete = existingIds.filter(id => !newIds.includes(id));
     if (toDelete.length > 0) {
+      console.log(`📡 API[POST]: Deleting ${toDelete.length} legacy items`);
       await prisma.todo.deleteMany({
         where: { id: { in: toDelete } }
       });
     }
 
-    // 4. 모든 할일 업서트
+    // 4. 모든 항목 업데이트/생성
     if (todos.length > 0) {
       for (const todo of todos) {
         await prisma.todo.upsert({
@@ -99,13 +105,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    console.log("✅ API[POST]: Sync Success for", user.id);
     return NextResponse.json({ success: true, synced: todos.length });
   } catch (error: any) {
-    console.error("❌ Sync Error Details:", {
-      message: error.message,
-      code: error.code,
-      meta: error.meta
-    });
+    console.error("❌ API[POST]: Sync Failure!", error.message);
     return NextResponse.json({ error: "Failed to sync todos", details: error.message }, { status: 500 });
   }
 }

@@ -310,8 +310,7 @@ export const useTodoStore = create<TodoState>()(
                     if (error) {
                         console.error('📦 useTodoStore: Rehydration Error:', error);
                     } else if (rehydratedState) {
-                        rehydratedState.ensureGuideTodos();
-                        console.log('📦 useTodoStore: Rehydration Complete & Guide Checked.');
+                        console.log('📦 useTodoStore: Rehydration Complete.');
                     }
                 };
             },
