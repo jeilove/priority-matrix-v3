@@ -1,76 +1,37 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// --- NextAuth Models ---
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  todos         Todo[]
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  todos     Todo[]
 }
 
-model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-}
-
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-}
-
-// --- Todo Model ---
 model Todo {
-  id           String   @id @default(cuid())
+  id           String   @id // 클라이언트 생성 ID 보존 (uuid)
   userId       String
   text         String
-  estimate     String?
-  energy       String?
-  status       String   @default("todo")
-  quadrant     String   @default("q1") // q1, q2, q3, q4, unassigned, inbox
-  repetition   String[] // Prisma supports scalar lists in PostgreSQL
-  context      String[]
-  tags         String[]
-  description  String? @db.Text
-  priorityRank Int?     @default(9999)
+  estimate     Int      @default(0)
+  energy       Int      @default(1)
+  status       String   @default("todo") // "todo", "done"
+  quadrant     String   @default("q1")   // "q1", "q2", "q3", "q4", "unassigned", "inbox"
+  repetition   String[] @default([])     // ["Mon", "Tue", ...]
+  context      String[] @default([])     // ["Work", "Home", ...]
+  tags         String[] @default([])
+  description  String?
+  priorityRank Int      @default(9999)
   isHidden     Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
