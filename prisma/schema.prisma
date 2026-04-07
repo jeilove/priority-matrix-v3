@@ -23,8 +23,8 @@ model Todo {
   id           String   @id // 클라이언트 생성 ID 보존 (uuid)
   userId       String
   text         String
-  estimate     Int      @default(0)
-  energy       Int      @default(1)
+  estimate     String   @default("")
+  energy       String   @default("energy-medium")
   status       String   @default("todo") // "todo", "done"
   quadrant     String   @default("q1")   // "q1", "q2", "q3", "q4", "unassigned", "inbox"
   repetition   String[] @default([])     // ["Mon", "Tue", ...]
