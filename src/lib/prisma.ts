@@ -8,14 +8,17 @@ neonConfig.fetchConnectionCache = true
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 
 function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL
-  
-  if (!connectionString) {
+  const rawUrl = process.env.DATABASE_URL
+  if (!rawUrl) {
     throw new Error("❌ DATABASE_URL is missing in environment variables.")
   }
 
+  // Neon Serverless 드라이버 충돌 방지를 위해 sslmode 등 쿼리 스트링 정제 (필요 시)
+  // 대부분의 경우 기본 URL만으로 충분합니다.
+  const connectionString = rawUrl.includes('?') ? rawUrl.split('?')[0] : rawUrl;
+
   // 로컬/프로덕션 모두에서 Neon Serverless 어댑터 방식 사용 (Prisma 7 표준)
-  // 로컬에서 TCP 분기 시 발생하는 복잡한 타입 에러(datasources vs datasourceUrl)를 원천 차단
+  console.log("📡 Prisma: Initializing with Neon Adapter...")
   const pool = new Pool({ connectionString })
   const adapter = new PrismaNeon(pool as any)
   
