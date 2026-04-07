@@ -1,4 +1,6 @@
-@echo off
+import os
+
+batch_content = """@echo off
 setlocal
 title Priority Matrix V3 - Local Runner
 
@@ -44,3 +46,10 @@ echo ------------------------------------------
 echo Priority Matrix V3 is running!
 echo ------------------------------------------
 pause
+"""
+
+# Windows CMD 호환성을 위해 cp949(ANSI)로 저장
+with open("run_app.bat", "w", encoding="cp949") as f:
+    f.write(batch_content)
+
+print("Batch file 'run_app.bat' created with cp949 encoding.")

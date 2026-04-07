@@ -155,6 +155,8 @@ const DroppableQuadrant = ({ q, todos, onDoubleClick }: { q: any; todos: Todo[];
               src={q.id === 4 ? `/q4_final_v2.png` : `/q${q.id}.png`} 
               alt={`Q${q.id} 아이콘`} 
               className="q-icon-img-new" 
+              style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }}
+              loading="eager"
             />
             <span className="q-label">
               {q.id === 4 ? (

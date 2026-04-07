@@ -38,10 +38,11 @@ export default function Home() {
   const { todos, moveTodo, moveTodoAndHide, sortOrder, setSortOrder } = useTodoStore();
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const version = "3.2.0";
 
   useEffect(() => {
-    // 이미 Header에서 3.2.0 로그를 남기므로 여기서는 중복 제거하거나 업데이트합니다
+    setMounted(true);
     console.log(`🚀 Priority Matrix Home v${version} - Initialized`);
   }, []);
 
@@ -83,14 +84,21 @@ export default function Home() {
     }
   };
 
+  if (!mounted) return null;
+
   return (
-    <main className="main-layout">
+    <main className="main-layout" style={{ opacity: mounted ? 1 : 0, transition: 'opacity 0.3s' }}>
       <Header onSettingsClick={() => setIsSettingsOpen(true)} />
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
       <div className="top-center-brand">
-        <img src="/logo_final_v2.png" alt="해줘봐요 로고" className="brand-logo" />
+        <img 
+          src="/logo_final_v2.png" 
+          alt="해줘봐요 로고" 
+          className="brand-logo" 
+          style={{ height: '80px', width: 'auto', objectFit: 'contain' }}
+        />
         <div className="brand-slogan">
           <span className="slogan-line">실행-계획</span>
           <span className="slogan-line">위임-삭제</span>

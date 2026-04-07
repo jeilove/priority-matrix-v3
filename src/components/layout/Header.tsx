@@ -8,10 +8,13 @@ import { useSession, signIn, signOut } from 'next-auth/react';
 const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
   const { data: session } = useSession();
 
+  React.useEffect(() => {
+    console.log("Priority Matrix v3.2.0 - Active");
+  }, []);
+
   return (
     <header className="fixed-nav">
       <div className="nav-icons">
-        <script dangerouslySetInnerHTML={{ __html: `console.log("Priority Matrix v3.2.0 - Active");` }} />
         <Link href="/" className="nav-icon-link" title="홈">
           <HomeIcon size={30} />
         </Link>
