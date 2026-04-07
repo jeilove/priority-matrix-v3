@@ -28,7 +28,7 @@ export interface Todo {
 
 interface TodoState {
     todos: Todo[];
-    lastModifiedAt: number; // 전체 리스트의 마지막 수정 시각
+    lastModifiedAt: number;
     isSyncing: boolean;
     lastSyncTime: string | null;
     sortOrder: SortOrderType;
@@ -171,10 +171,9 @@ export const useTodoStore = create<TodoState>()(
             exportTodos: () => {
                 const dataStr = JSON.stringify(get().todos, null, 2);
                 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = `priority-matrix-backup-${new Date().toISOString().split('T')[0]}.json`;
                 const linkElement = document.createElement('a');
                 linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.setAttribute('download', `backup-${new Date().getTime()}.json`);
                 linkElement.click();
             },
 
@@ -188,7 +187,7 @@ export const useTodoStore = create<TodoState>()(
                                 set({ todos: json, lastModifiedAt: Date.now() });
                                 resolve();
                             } else {
-                                throw new Error('올바른 JSON 형식이 아닙니다.');
+                                throw new Error('Invalid JSON');
                             }
                         } catch (err) {
                             reject(err);
@@ -200,39 +199,41 @@ export const useTodoStore = create<TodoState>()(
 
             syncFromDB: async () => {
                 try {
-                    console.log('📡 syncFromDB: Requesting Snapshots...');
+                    console.log('📡 syncFromDB: Fetching Snapshots...');
                     const response = await fetch(`/api/todos?t=${Date.now()}`);
-                    if (!response.ok) throw new Error('DB 불러오기 실패');
+                    if (!response.ok) throw new Error('DB fetch failed');
                     const dbData = await response.json();
                     
-                    const localModified = get().lastModifiedAt || 0;
+                    if (!Array.isArray(dbData)) return;
+
+                    const localTodos = get().todos || [];
+                    const localModified = Number(get().lastModifiedAt) || 0;
                     
-                    // DB에서 넘어오는 dbTodos는 배열이지만, 
-                    // 우리는 그 중에서 가장 최신 updatedAt을 가진 쪽을 찾습니다.
-                    if (Array.isArray(dbData)) {
-                        const dbDataWithTimes = dbData.map(t => ({
-                            ...t,
-                            updatedAt: new Date(t.updatedAt).getTime(),
-                            createdAt: new Date(t.createdAt).getTime()
-                        }));
+                    const dbDataWithTimes = dbData.map(t => ({
+                        ...t,
+                        updatedAt: t.updatedAt ? new Date(t.updatedAt).getTime() : 0,
+                        createdAt: t.createdAt ? new Date(t.createdAt).getTime() : 0
+                    }));
 
-                        // DB의 가장 큰 updatedAt 찾기
-                        const dbMaxModified = dbDataWithTimes.length > 0 
-                            ? Math.max(...dbDataWithTimes.map(t => t.updatedAt)) 
-                            : 0;
+                    const dbMaxModified = dbDataWithTimes.length > 0 
+                        ? Math.max(...dbDataWithTimes.map(t => t.updatedAt)) 
+                        : 0;
 
-                        console.log('📡 syncFromDB Snapshot Check:', { db: dbMaxModified, local: localModified });
+                    console.log('📡 syncFromDB Time Check:', { db: dbMaxModified, local: localModified });
 
-                        if (dbMaxModified > localModified) {
-                            console.log('📡 syncFromDB: DB wins. Overwriting Local.');
-                            set({ todos: dbDataWithTimes, lastModifiedAt: dbMaxModified, lastSyncTime: new Date().toLocaleString() });
-                        } else {
-                            console.log('📡 syncFromDB: Local is newer or same. Keeping Local.');
-                            // 만약 DB가 비어있고 로컬은 있다면, 이 다음에 syncToDB가 실행되어 DB를 채울 것입니다.
-                        }
+                    // [최신성 절대 승리 원칙]
+                    // 1. 온라인(DB)이 더 최근이면 온라인 승리
+                    // 2. 시간은 같지만 로컬에 데이터가 없고 온라인에는 있다면 온라인 승리 (0개/N개 꼬임 방지)
+                    if (dbMaxModified > localModified || (dbMaxModified === localModified && localTodos.length === 0 && dbDataWithTimes.length > 0)) {
+                        console.log('📡 syncFromDB: Online is Master. Updating Local.');
+                        set({ todos: dbDataWithTimes, lastModifiedAt: dbMaxModified, lastSyncTime: new Date().toLocaleString() });
+                    } else if (localModified > dbMaxModified) {
+                        console.log('📡 syncFromDB: Local is Master. Will sync to DB soon.');
+                    } else {
+                        console.log('📡 syncFromDB: Already synced.');
                     }
                 } catch (err) {
-                    console.error('📡 syncFromDB Exception:', err);
+                    console.error('❌ syncFromDB Error:', err);
                     throw err;
                 }
             },
@@ -246,9 +247,9 @@ export const useTodoStore = create<TodoState>()(
                         body: JSON.stringify({ todos: get().todos }),
                     });
 
-                    if (!response.ok) throw new Error('DB 저장 실패');
+                    if (!response.ok) throw new Error('DB sync failure');
                     set({ lastSyncTime: new Date().toLocaleString() });
-                    console.log('✅ syncToDB snapshot success');
+                    console.log('✅ syncToDB success');
                 } catch (err) {
                     console.error('❌ syncToDB Error:', err);
                     throw err;
