@@ -28,7 +28,7 @@ export interface Todo {
 
 interface TodoState {
     todos: Todo[];
-    lastModifiedAt: number;
+    lastModifiedAt: number; // 사용자가 직접 수정한 마지막 시각만 기록
     isSyncing: boolean;
     lastSyncTime: string | null;
     sortOrder: SortOrderType;
@@ -188,7 +188,7 @@ export const useTodoStore = create<TodoState>()(
                                 set({ todos: json, lastModifiedAt: Date.now() });
                                 resolve();
                             } else {
-                                throw new Error('올바른 형식이 아닙니다.');
+                                throw new Error('Invalid Format');
                             }
                         } catch (err) {
                             reject(err);
@@ -220,26 +220,39 @@ export const useTodoStore = create<TodoState>()(
                         ? Math.max(...dbTodos.map(t => t.updatedAt)) 
                         : 0;
 
-                    console.log('📡 syncFromDB Check:', { 
+                    // [ID 기반 지문(Fingerprint) 검증]
+                    // 시간뿐만 아니라 아이템 목록 자체가 다른지 확인하여 교착 상태를 방지합니다.
+                    const localFingerprint = localTodos.map(t => t.id).sort().join(',');
+                    const dbFingerprint = dbTodos.map(t => t.id).sort().join(',');
+
+                    console.log('📡 syncFromDB Status Log:', { 
                         DB: { time: dbMaxModified, count: dbTodos.length }, 
                         PC: { time: localModified, count: localTodos.length } 
                     });
 
-                    // [클린 동기화 판별]
-                    // 1. 온라인(DB)이 시간이 더 늦다면 (최신 활동) -> DB 승리
-                    // 2. 시간은 똑같지만, DB에는 데이터가 있고 PC가 비어있다면 -> DB 승리 (방금 상황 해결)
-                    const shouldLoadDB = (dbMaxModified > localModified) || 
-                                       (dbMaxModified === localModified && dbTodos.length > localTodos.length);
+                    // [수정된 판별 로직]
+                    // 사용자님 의견 반영: lastModifiedAt 오염 방지 및 실질적 데이터 차이 감지
+                    const isRemoteNewer = dbMaxModified > localModified;
+                    const isContentDifferent = localFingerprint !== dbFingerprint;
 
-                    if (shouldLoadDB) {
-                        console.log('📡 syncFromDB: Loading DB data to Local Store.');
-                        set({ 
-                            todos: dbTodos, 
-                            lastModifiedAt: dbMaxModified,
-                            lastSyncTime: new Date().toLocaleString() 
-                        });
+                    if (isRemoteNewer || isContentDifferent) {
+                        console.log('📡 syncFromDB: Potential change detected. Comparing...');
+                        
+                        // 만약 로컬 시각이 서버보다 늦다면(사용자가 방금 PC에서 수정함), 서버 데이터를 덮어쓰지 않고 대기합니다.
+                        // (잠시 후 syncToDB가 이 새로운 데이터를 서버로 올릴 것입니다.)
+                        if (localModified > dbMaxModified && localTodos.length > 0) {
+                            console.log('📡 syncFromDB: Local is Master. Waiting for Auto-Save.');
+                        } else {
+                            console.log('📡 syncFromDB: Loading Remote Snapshot.');
+                            set({ 
+                                todos: dbTodos, 
+                                // 주의: 여기서 lastModifiedAt을 dbMaxModified로 맞추지 않습니다.
+                                // 그래야 로컬에서 새로 작업할 때만 localModified가 올라가서 업로드 우선권을 갖게 됩니다.
+                                lastSyncTime: new Date().toLocaleString() 
+                            });
+                        }
                     } else {
-                        console.log('📡 syncFromDB: Local is up-to-date.');
+                        console.log('📡 syncFromDB: Completely synced.');
                     }
                 } catch (err) {
                     console.error('❌ syncFromDB Error:', err);
@@ -250,14 +263,16 @@ export const useTodoStore = create<TodoState>()(
             syncToDB: async () => {
                 set({ isSyncing: true });
                 try {
+                    const currentTodos = get().todos;
                     const response = await fetch('/api/todos', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ todos: get().todos }),
+                        body: JSON.stringify({ todos: currentTodos }),
                     });
 
                     if (!response.ok) throw new Error('Upload failed');
-                    console.log('✅ syncToDB success (Uploaded Count:', get().todos.length, ')');
+                    set({ lastSyncTime: new Date().toLocaleString() });
+                    console.log('✅ syncToDB success (Count:', currentTodos.length, ')');
                 } catch (err) {
                     console.error('❌ syncToDB Error:', err);
                     throw err;
