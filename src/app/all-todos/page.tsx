@@ -465,7 +465,7 @@ const AllTodosContent = () => {
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
               <Link href="/" className={`mobile-all-nav-item`}>
-                <img src="/icons/home.png" alt="홈" className="mobile-nav-icon" />
+                <img src="/logo_final_v2.png" alt="홈" className="mobile-nav-icon" />
               </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
                 <img src="/q1.png" alt="해" className="mobile-nav-icon" />
@@ -796,7 +796,7 @@ const AllTodosContent = () => {
                     padding-bottom: env(safe-area-inset-bottom);
                     padding-left: 10px; padding-right: 10px;
                   }
-                  .last-item { border: 2px solid white !important; }
+                  .last-item { border: 1px solid white !important; border-radius: 8px; }
                   .mobile-all-nav-item {
                     display: flex;
                     flex-direction: column;
@@ -814,13 +814,12 @@ const AllTodosContent = () => {
                     transform: translateY(-2px);
                   }
                   .mobile-nav-icon {
-                    width: 32px; height: 32px; object-fit: contain;
-                    opacity: 0.7; transition: all 0.3s;
+                    width: 36px; height: 36px; object-fit: contain;
+                    opacity: 0.8; transition: all 0.3s;
                   }
                   .mobile-all-nav-item.active .mobile-nav-icon {
                     opacity: 1; 
                     transform: scale(1.1);
-                    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
                   }
                 }
             `}</style>
