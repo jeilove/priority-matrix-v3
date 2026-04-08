@@ -767,9 +767,15 @@ const AllTodosContent = () => {
                   .mobile-only-icon { display: block !important; width: 22px; height: 22px; object-fit: contain; }
                   .chevron { color: var(--text-secondary); opacity: 0.6; width: 14px; height: 14px; }
                   .sort-img { mix-blend-mode: color-dodge; opacity: 0.9; }
-                  .filter-img { mix-blend-mode: color-dodge; opacity: 0.8; }
+                  .filter-img { mix-blend-mode: multiply; opacity: 1; filter: contrast(1.1); }
                   
                   .pc-only-icon, .pc-only-text, .sort-label { display: none !important; }
+                  
+                  .filter-toggle-btn { 
+                    background: white !important; 
+                    border: 1px solid rgba(0,0,0,0.1) !important;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+                  }
                   
                   .all-todos-sort-select {
                     position: absolute;
