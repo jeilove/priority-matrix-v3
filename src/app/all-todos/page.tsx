@@ -438,7 +438,10 @@ const AllTodosContent = () => {
 
               <div className="all-todos-sort-control glass mobile-icon-only">
                 <span className="sort-label">정렬:</span>
-                <img src="/icons/sort.png" alt="정렬" className="mobile-only-icon" />
+                <div className="mobile-sort-trigger">
+                  <img src="/icons/sort.png" alt="정렬" className="mobile-only-icon sort-img" />
+                  <ChevronDown size={14} className="mobile-only-icon chevron" />
+                </div>
                 <select 
                   value={sortOrder} 
                   onChange={(e) => setSortOrder(e.target.value as any)}
@@ -727,7 +730,10 @@ const AllTodosContent = () => {
                     justify-content: center; 
                     position: relative;
                   }
-                  .mobile-only-icon { display: block; width: 24px; height: 24px; object-fit: contain; }
+                  .mobile-sort-trigger { display: flex; align-items: center; gap: 2px; }
+                  .mobile-only-icon { display: block; width: 22px; height: 22px; object-fit: contain; }
+                  .chevron { color: var(--text-secondary); opacity: 0.6; width: 14px; height: 14px; }
+                  .sort-img { mix-blend-mode: color-dodge; opacity: 0.9; }
                   .filter-img { mix-blend-mode: color-dodge; opacity: 0.8; }
                   
                   .pc-only-icon, .pc-only-text, .sort-label { display: none !important; }
