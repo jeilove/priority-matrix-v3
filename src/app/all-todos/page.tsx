@@ -50,7 +50,7 @@ const quadrantIcons: Record<string, string> = {
   'q1': '/q1.png',
   'q2': '/q2.png',
   'q3': '/q3.png',
-  'q4': '/icons/q4_w_black.png',
+  'q4': '/q4_final.png',
   'inbox': '/archive.png'
 };
 
@@ -477,7 +477,7 @@ const AllTodosContent = () => {
                 <img src="/q3.png" alt="줘" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
-                <img src="/icons/q4_w_black.png" alt="요" className="mobile-nav-icon" />
+                <img src="/q4_final.png" alt="요" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <Folder size={24} color="white" strokeWidth={1.5} />
