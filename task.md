@@ -1,19 +1,7 @@
-# 📋 할일 관리 서비스 개발 Task
-
-## [v3.1.6] Neon DB 및 구글 로그인 서버 측 통합 (완료)
-- [x] Vercel(Serverless) + Neon(PostgreSQL) 아키텍처 전환
-- [x] NextAuth.js 기반 구글 로그인 시스템 구축
-- [x] Prisma 7.x 및 Neon 어댑터 연동 (vulnerable Next.js 패치 포함)
-- [x] SyncManager를 통한 실시간 백그라운드 동기화 구현
-- [x] 헤더 로그인/로그아웃 UI 및 프로필 노출
-
-## [v1.9.0] UI 고도화 및 로직 강화 (완료)
-- [x] 메인 화면 할 일 카드 제목 말줄임(...) 적용
-- [x] 메인 화면 에너지/상태 태그 디자인 세련되게 축소
-- [x] 상세 화면(`all-todos`) 할 일 카드 제목 말줄임 적용
-- [x] '마침/중단' 상태 시 보관함(Inbox) 자동 이동 로직 연동
-
-## 다음 예정 작업 (Phase 3 ~ 4)
-- [ ] 주간 리포트 생성 로직 고도화
-- [ ] 설정 메뉴: 다크모드/테마 설정
-- [ ] AI 설정 및 자동 분류 기능 고도화
+# Task Status
+- [x] Standardize Q4 icon asset across PC/Mobile
+- [x] Fix Q4 icon ghosting/background issue on PC
+- [x] Restore Settings button functionality on PC (All-todos, Ranking)
+- [x] Refactor settings to global state (Zustand) for consistency
+- [x] Apply cache-busting to all quadrant icons
+- [x] Fix mobile drag-and-drop instability (touch-action & sensor tuning)

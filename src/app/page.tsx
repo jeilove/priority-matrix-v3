@@ -58,8 +58,8 @@ export default function Home() {
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 10,
+        delay: 250,
+        tolerance: 5,
       },
     })
   );

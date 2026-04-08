@@ -79,6 +79,7 @@ const DraggableTodoCard = ({ todo, color, onEdit, onDelete }: { todo: Todo; colo
           transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
           cursor: grab; 
           overflow: hidden;
+          touch-action: none;
         }
         .todo-card:hover { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); }
         .todo-card.dragging { opacity: 0.5; z-index: 1000; }
