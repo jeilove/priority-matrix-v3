@@ -47,9 +47,9 @@ const quadrantLabels: Record<string, string> = {
 
 const quadrantIcons: Record<string, string> = {
   'all': '/logo_final_v2.png',
-  'q1': '/icons/q1.png',
-  'q2': '/icons/q2.png',
-  'q3': '/icons/q3.png',
+  'q1': '/q1.png',
+  'q2': '/q2.png',
+  'q3': '/q3.png',
   'q4': '/icons/q4.png',
   'inbox': '/archive.png'
 };
@@ -468,16 +468,16 @@ const AllTodosContent = () => {
                 <Home size={28} color="white" strokeWidth={1.5} />
               </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
-                <img src="/icons/q1.png" alt="해" className="mobile-nav-icon q-blend" />
+                <img src="/q1.png" alt="해" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q2' ? 'active' : ''}`} onClick={() => handleFilterChange('q2')}>
-                <img src="/icons/q2.png" alt="봐" className="mobile-nav-icon q-blend" />
+                <img src="/q2.png" alt="봐" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q3' ? 'active' : ''}`} onClick={() => handleFilterChange('q3')}>
-                <img src="/icons/q3.png" alt="줘" className="mobile-nav-icon q-blend" />
+                <img src="/q3.png" alt="줘" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
-                <img src="/icons/q4.png" alt="요" className="mobile-nav-icon q-blend" />
+                <img src="/icons/q4.png" alt="요" className="mobile-nav-icon q-blend-yo" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <Folder size={24} color="white" strokeWidth={1.5} />
@@ -817,7 +817,7 @@ const AllTodosContent = () => {
                     width: 36px; height: 36px; object-fit: contain;
                     opacity: 0.8; transition: all 0.3s;
                   }
-                  .q-blend { mix-blend-mode: multiply; filter: brightness(1.1); }
+                  .q-blend-yo { mix-blend-mode: multiply; filter: brightness(1.1); }
                   .mobile-all-nav-item.active .mobile-nav-icon {
                     opacity: 1; 
                     transform: scale(1.1);
