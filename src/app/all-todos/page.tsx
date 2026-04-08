@@ -441,29 +441,23 @@ const AllTodosContent = () => {
 
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
-              <Link href="/" className="mobile-all-nav-item">
+              <Link href="/" className={`mobile-all-nav-item`}>
                 <img src="/icons/home.png" alt="홈" className="mobile-nav-icon" />
-                <span>홈</span>
               </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
                 <img src="/icons/q1.png" alt="해" className="mobile-nav-icon" />
-                <span>해</span>
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q2' ? 'active' : ''}`} onClick={() => handleFilterChange('q2')}>
                 <img src="/icons/q2.png" alt="봐" className="mobile-nav-icon" />
-                <span>봐</span>
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q3' ? 'active' : ''}`} onClick={() => handleFilterChange('q3')}>
                 <img src="/icons/q3.png" alt="줘" className="mobile-nav-icon" />
-                <span>줘</span>
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
                 <img src="/icons/q4.png" alt="요" className="mobile-nav-icon" />
-                <span>요</span>
               </button>
               <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <img src="/icons/inbox.png" alt="보관함" className="mobile-nav-icon" />
-                <span>보관함</span>
               </button>
             </nav>
 
@@ -769,37 +763,40 @@ const AllTodosContent = () => {
                     display: flex !important;
                     position: fixed;
                     bottom: 0; left: 0; right: 0;
-                    height: 80px;
-                    background: rgba(13, 17, 23, 0.95);
+                    height: 70px;
+                    background: rgba(13, 17, 23, 0.9);
                     backdrop-filter: blur(20px);
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
+                    border-top: 1px solid rgba(255, 255, 255, 0.08);
                     justify-content: space-around;
                     align-items: center;
                     z-index: 9999;
                     padding-bottom: env(safe-area-inset-bottom);
+                    padding-left: 10px; padding-right: 10px;
                   }
                   .mobile-all-nav-item {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    gap: 4px;
+                    justify-content: center;
                     background: none; border: none;
-                    color: var(--text-secondary);
-                    font-size: 0.7rem;
-                    font-weight: 700;
-                    padding: 8px;
-                    transition: all 0.2s;
+                    width: 50px; height: 50px;
+                    border-radius: 12px;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                     cursor: pointer;
                   }
                   .mobile-all-nav-item.active {
-                    color: white; transform: scale(1.1);
+                    background: rgba(255, 255, 255, 0.06);
+                    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+                    transform: translateY(-2px);
                   }
                   .mobile-nav-icon {
-                    width: 28px; height: 28px; object-fit: contain;
-                    opacity: 0.6; transition: all 0.2s;
+                    width: 32px; height: 32px; object-fit: contain;
+                    opacity: 0.5; transition: all 0.3s;
+                    filter: grayscale(1);
                   }
                   .mobile-all-nav-item.active .mobile-nav-icon {
-                    opacity: 1; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+                    opacity: 1; 
+                    filter: grayscale(0) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
                   }
                 }
             `}</style>
