@@ -403,6 +403,29 @@ const AllTodosContent = () => {
 
     return (
         <div className="container" style={{ paddingTop: '20px' }}>
+            <nav className="quadrant-tabs">
+              {Object.entries(quadrantLabels).map(([key, label]) => (
+                <button 
+                  key={key} 
+                  className={`tab-btn ${filter === key ? 'active' : ''}`}
+                  onClick={() => handleFilterChange(key)}
+                >
+                  <img src={quadrantIcons[key]} alt="" className="tab-icon-small" />
+                  <span className="tab-label-text">
+                    {key === 'q1' ? (
+                      <>당장 <span style={{ color: 'var(--q1-color)' }}>해</span></>
+                    ) : key === 'q2' ? (
+                      <>살펴 <span style={{ color: 'var(--q2-color)' }}>봐</span></>
+                    ) : key === 'q3' ? (
+                      <>남 <span style={{ color: 'var(--q3-color)' }}>줘</span></>
+                    ) : key === 'q4' ? (
+                      <><span style={{ color: 'var(--q4-color)' }}>요</span>건 빼</>
+                    ) : label}
+                  </span>
+                </button>
+              ))}
+            </nav>
+
             <section className="controls-row">
               <div className="search-box glass">
                   <Search size={18} color="var(--text-secondary)" />
@@ -442,22 +465,22 @@ const AllTodosContent = () => {
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
               <Link href="/" className={`mobile-all-nav-item`}>
-                <img src="/icons/home.png" alt="홈" className="mobile-nav-icon" />
+                <img src="/logo_final_v2.png" alt="홈" className="mobile-nav-icon" />
               </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
-                <img src="/icons/q1.png" alt="해" className="mobile-nav-icon" />
+                <img src="/q1.png" alt="해" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q2' ? 'active' : ''}`} onClick={() => handleFilterChange('q2')}>
-                <img src="/icons/q2.png" alt="봐" className="mobile-nav-icon" />
+                <img src="/q2.png" alt="봐" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q3' ? 'active' : ''}`} onClick={() => handleFilterChange('q3')}>
-                <img src="/icons/q3.png" alt="줘" className="mobile-nav-icon" />
+                <img src="/q3.png" alt="줘" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
-                <img src="/icons/q4.png" alt="요" className="mobile-nav-icon" />
+                <img src="/q4_final_v2.png" alt="요" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
-                <img src="/icons/inbox.png" alt="보관함" className="mobile-nav-icon" />
+                <img src="/archive.png" alt="보관함" className="mobile-nav-icon" />
               </button>
             </nav>
 
@@ -785,18 +808,18 @@ const AllTodosContent = () => {
                     cursor: pointer;
                   }
                   .mobile-all-nav-item.active {
-                    background: rgba(255, 255, 255, 0.06);
-                    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+                    background: rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05);
                     transform: translateY(-2px);
                   }
                   .mobile-nav-icon {
-                    width: 32px; height: 32px; object-fit: contain;
-                    opacity: 0.5; transition: all 0.3s;
-                    filter: grayscale(1);
+                    width: 36px; height: 36px; object-fit: contain;
+                    opacity: 0.6; transition: all 0.3s;
                   }
                   .mobile-all-nav-item.active .mobile-nav-icon {
                     opacity: 1; 
-                    filter: grayscale(0) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+                    transform: scale(1.1);
+                    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
                   }
                 }
             `}</style>
