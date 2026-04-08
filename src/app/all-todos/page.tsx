@@ -724,6 +724,11 @@ const AllTodosContent = () => {
 
                 .no-data { text-align: center; color: var(--text-secondary); padding: 50px; font-weight: 600; font-size: 0.9rem; }
 
+                .mobile-all-bottom-nav { display: none; } /* 기본적으로 숨김 (PC) */
+                .mobile-only-icon { display: none; }
+                .pc-only-icon { display: block; }
+                .pc-only-text { display: inline; }
+
                 @media (max-width: 768px) {
                   .all-todos-layout { padding-top: 10px; }
                   .container { padding-top: 5px !important; }
@@ -742,7 +747,7 @@ const AllTodosContent = () => {
                     position: relative;
                   }
                   .mobile-sort-trigger { display: flex; align-items: center; gap: 2px; }
-                  .mobile-only-icon { display: block; width: 22px; height: 22px; object-fit: contain; }
+                  .mobile-only-icon { display: block !important; width: 22px; height: 22px; object-fit: contain; }
                   .chevron { color: var(--text-secondary); opacity: 0.6; width: 14px; height: 14px; }
                   .sort-img { mix-blend-mode: color-dodge; opacity: 0.9; }
                   .filter-img { mix-blend-mode: color-dodge; opacity: 0.8; }
@@ -761,16 +766,16 @@ const AllTodosContent = () => {
 
                   /* 모바일 하단 탭바 스타일 */
                   .mobile-all-bottom-nav {
-                    display: flex;
+                    display: flex !important;
                     position: fixed;
                     bottom: 0; left: 0; right: 0;
                     height: 80px;
-                    background: rgba(13, 17, 23, 0.8);
+                    background: rgba(13, 17, 23, 0.95);
                     backdrop-filter: blur(20px);
-                    border-top: 1px solid rgba(255, 255, 255, 0.08);
+                    border-top: 1px solid rgba(255, 255, 255, 0.1);
                     justify-content: space-around;
                     align-items: center;
-                    z-index: 3000;
+                    z-index: 9999;
                     padding-bottom: env(safe-area-inset-bottom);
                   }
                   .mobile-all-nav-item {
@@ -787,7 +792,7 @@ const AllTodosContent = () => {
                     cursor: pointer;
                   }
                   .mobile-all-nav-item.active {
-                    color: white; scale: 1.1;
+                    color: white; transform: scale(1.1);
                   }
                   .mobile-nav-icon {
                     width: 28px; height: 28px; object-fit: contain;
@@ -797,11 +802,6 @@ const AllTodosContent = () => {
                     opacity: 1; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
                   }
                 }
-                
-                .mobile-all-bottom-nav { display: none; } /* PC에선 숨김 */
-                .mobile-only-icon { display: none; }
-                .pc-only-icon { display: block; }
-                .pc-only-text { display: inline; }
             `}</style>
         </div>
     );
