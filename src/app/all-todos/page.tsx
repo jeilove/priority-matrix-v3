@@ -436,8 +436,9 @@ const AllTodosContent = () => {
                   />
               </div>
 
-              <div className="all-todos-sort-control glass">
+              <div className="all-todos-sort-control glass mobile-icon-only">
                 <span className="sort-label">정렬:</span>
+                <img src="/icons/sort.png" alt="정렬" className="mobile-only-icon" />
                 <select 
                   value={sortOrder} 
                   onChange={(e) => setSortOrder(e.target.value as any)}
@@ -449,9 +450,10 @@ const AllTodosContent = () => {
                 </select>
               </div>
 
-              <button className={`filter-toggle-btn glass ${isFilterOpen ? 'active' : ''}`} onClick={() => setIsFilterOpen(!isFilterOpen)}>
-                <Filter size={18} />
-                <span>상세 필터</span>
+              <button className={`filter-toggle-btn glass mobile-icon-only ${isFilterOpen ? 'active' : ''}`} onClick={() => setIsFilterOpen(!isFilterOpen)}>
+                <Filter size={18} className="pc-only-icon" />
+                <img src="/icons/filter.jpg" alt="필터" className="mobile-only-icon filter-img" />
+                <span className="pc-only-text">상세 필터</span>
                 {isFilterOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
             </section>
@@ -712,6 +714,42 @@ const AllTodosContent = () => {
                 .todo-description p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; margin: 0; }
 
                 .no-data { text-align: center; color: var(--text-secondary); padding: 50px; font-weight: 600; font-size: 0.9rem; }
+
+                @media (max-width: 768px) {
+                  .controls-row { flex-wrap: nowrap; gap: 8px; padding: 0 10px; }
+                  .search-box { flex: 3; padding: 8px 12px; }
+                  .search-box input { font-size: 0.9rem; }
+                  
+                  .mobile-icon-only { 
+                    flex: 1; 
+                    min-width: 44px; 
+                    padding: 0 !important; 
+                    justify-content: center; 
+                    position: relative;
+                  }
+                  .mobile-only-icon { display: block; width: 24px; height: 24px; object-fit: contain; }
+                  .filter-img { mix-blend-mode: color-dodge; opacity: 0.8; }
+                  
+                  .pc-only-icon, .pc-only-text, .sort-label { display: none !important; }
+                  
+                  .all-todos-sort-select {
+                    position: absolute;
+                    top: 0; left: 0; width: 100%; height: 100%;
+                    opacity: 0; /* 글자는 안보이지만 클릭은 가능하게 */
+                    z-index: 2;
+                  }
+                  
+                  .todo-list-wrapper { margin-bottom: 100px; }
+                  .todo-grid { grid-template-columns: 1fr; gap: 16px; }
+                  .quadrant-tabs { gap: 8px; padding: 10px 5px; }
+                  .tab-btn { padding: 8px 10px; font-size: 0.8rem; flex: 1; min-width: auto; }
+                  .tab-icon-small { width: 28px; height: 28px; }
+                  .tab-label-text { display: none; }
+                }
+                
+                .mobile-only-icon { display: none; }
+                .pc-only-icon { display: block; }
+                .pc-only-text { display: inline; }
             `}</style>
         </div>
     );
