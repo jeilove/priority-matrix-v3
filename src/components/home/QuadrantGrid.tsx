@@ -109,6 +109,7 @@ const DraggableTodoCard = ({ todo, color, onEdit, onDelete }: { todo: Todo; colo
           .todo-card { min-height: 52px; padding: 6px 8px; gap: 6px; }
           .todo-text { font-size: 0.88rem; }
           .mini-tag { font-size: 0.68rem; padding: 1px 4px; }
+          .todo-meta-tags { display: none !important; }
           .card-actions { opacity: 1; }
         }
         .action-icon-btn { background: none; border: none; color: rgba(255, 255, 255, 0.4); cursor: pointer; padding: 4px; display: flex; align-items: center; }

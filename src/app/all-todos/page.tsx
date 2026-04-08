@@ -479,7 +479,7 @@ const AllTodosContent = () => {
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
                 <img src="/q4.png" alt="요" className="mobile-nav-icon" />
               </button>
-              <button className={`mobile-all-nav-item last-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
+              <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <Folder size={24} color="white" strokeWidth={1.5} />
               </button>
             </nav>
@@ -796,7 +796,7 @@ const AllTodosContent = () => {
                     padding-bottom: env(safe-area-inset-bottom);
                     padding-left: 10px; padding-right: 10px;
                   }
-                  .last-item { border: 1px solid white !important; border-radius: 8px; }
+
                   .mobile-all-nav-item {
                     display: flex;
                     flex-direction: column;
