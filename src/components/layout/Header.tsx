@@ -4,9 +4,11 @@ import React from 'react';
 import { Home as HomeIcon, Settings, LogIn, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useSession, signIn, signOut } from 'next-auth/react';
+import { useTodoStore } from '@/store/useTodoStore';
 
-const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
+const Header = () => {
   const { data: session } = useSession();
+  const setSettingsOpen = useTodoStore(state => state.setSettingsOpen);
 
   React.useEffect(() => {
     console.log("Priority Matrix v3.2.0 - Active");
@@ -46,7 +48,7 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
         <button 
           className="nav-icon-link settings-trigger" 
           title="설정"
-          onClick={onSettingsClick}
+          onClick={() => setSettingsOpen(true)}
         >
           <Settings size={30} />
         </button>

@@ -3,7 +3,8 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
-import { Plus, Search, Trash2, Edit, ChevronDown, ChevronUp, X, Check, Filter, Home, Folder } from 'lucide-react';
+import SettingsModal from '@/components/home/SettingsModal';
+import { Plus, Search, Trash2, Edit, ChevronDown, ChevronUp, X, Check, Filter, Home, Folder, Settings, LogOut, LogIn } from 'lucide-react';
 import { useTodoStore, Todo, QuadrantType, StatusType, EnergyType, RepetitionType, ContextType } from '@/store/useTodoStore';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -275,7 +276,7 @@ const TodoFormModal = ({
 
 // --- 메인 콘텐츠 컴포넌트 ---
 const AllTodosContent = () => {
-    const { todos, deleteTodo, updateTodo, fullUpdateTodo, addTodo, updateTodoStatus, sortOrder, setSortOrder } = useTodoStore();
+    const { todos, deleteTodo, updateTodo, fullUpdateTodo, addTodo, updateTodoStatus, sortOrder, setSortOrder, setSettingsOpen } = useTodoStore();
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -481,6 +482,9 @@ const AllTodosContent = () => {
               </button>
               <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <Folder size={24} color="white" strokeWidth={1.5} />
+              </button>
+              <button className="mobile-all-nav-item" onClick={() => setSettingsOpen(true)}>
+                <Settings size={24} color="white" strokeWidth={1.5} />
               </button>
             </nav>
 
@@ -834,6 +838,8 @@ const AllTodos = () => {
             <Suspense fallback={<div className="container">로딩 중...</div>}>
                 <AllTodosContent />
             </Suspense>
+
+            <SettingsModal />
 
             <style jsx>{`
                 .all-todos-layout {

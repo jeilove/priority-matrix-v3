@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
+import SettingsModal from '@/components/home/SettingsModal';
 import { useTodoStore, Todo } from '@/store/useTodoStore';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, GripVertical, Edit, Trash2 } from 'lucide-react';
@@ -166,6 +167,8 @@ const RankingPage = () => {
   return (
     <main className="ranking-layout">
       <Header />
+      
+      <SettingsModal />
       
       <div className="container">
         <header className="page-header">

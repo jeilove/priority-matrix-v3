@@ -5,14 +5,9 @@ import { X, Cloud, Download, Save, AlertTriangle, ShieldCheck, Lock } from 'luci
 import { useTodoStore } from '@/store/useTodoStore';
 import { useSession, signIn } from 'next-auth/react';
 
-interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
+const SettingsModal = () => {
   const { data: session, status } = useSession();
-  const { lastSyncTime, exportTodos, importTodos } = useTodoStore();
+  const { lastSyncTime, exportTodos, importTodos, isSettingsOpen, setSettingsOpen } = useTodoStore();
   const [statusMessage, setStatusMessage] = useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -40,17 +35,17 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isSettingsOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay" onClick={() => setSettingsOpen(false)}>
       <div className="settings-modal glass" onClick={e => e.stopPropagation()}>
         <header className="modal-header">
           <div className="title-section">
             <ShieldCheck size={24} className="title-icon" />
             <h2>동기화 및 보안 설정</h2>
           </div>
-          <button className="close-btn" onClick={onClose}><X size={20} /></button>
+          <button className="close-btn" onClick={() => setSettingsOpen(false)}><X size={20} /></button>
         </header>
 
         <section className="modal-body">

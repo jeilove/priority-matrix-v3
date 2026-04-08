@@ -32,6 +32,7 @@ interface TodoState {
     isSyncing: boolean;
     lastSyncTime: string | null;
     sortOrder: SortOrderType;
+    isSettingsOpen: boolean;
 
     addTodo: (todo: Partial<Todo> & { text: string; estimate: string }) => void;
     updateTodo: (id: string, text: string, estimate: string) => void;
@@ -43,6 +44,7 @@ interface TodoState {
     clearInbox: () => void;
     setSortOrder: (order: SortOrderType) => void;
     updateTodoRanks: (updates: { id: string; rank: number }[]) => void;
+    setSettingsOpen: (open: boolean) => void;
     
     syncFromDB: () => Promise<void>;
     syncToDB: () => Promise<void>;
@@ -58,6 +60,7 @@ export const useTodoStore = create<TodoState>()(
             isSyncing: false,
             lastSyncTime: null,
             sortOrder: 'recent',
+            isSettingsOpen: false,
 
             addTodo: (params) => {
                 const now = Date.now();
@@ -152,6 +155,7 @@ export const useTodoStore = create<TodoState>()(
             },
 
             setSortOrder: (order) => set({ sortOrder: order }),
+            setSettingsOpen: (open) => set({ isSettingsOpen: open }),
 
             updateTodoRanks: (updates) => {
                 const now = Date.now();

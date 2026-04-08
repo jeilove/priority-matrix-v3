@@ -40,7 +40,6 @@ export const dynamic = 'force-dynamic';
 export default function Home() {
   const { todos, moveTodo, moveTodoAndHide, sortOrder, setSortOrder } = useTodoStore();
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [mobileAddOpen, setMobileAddOpen] = useState(false);
   const { data: session } = useSession();
@@ -93,9 +92,9 @@ export default function Home() {
 
   return (
     <main className="main-layout" style={{ opacity: mounted ? 1 : 0, transition: 'opacity 0.3s' }}>
-      <Header onSettingsClick={() => setIsSettingsOpen(true)} />
+      <Header />
 
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <SettingsModal />
 
       {/* PC 브랜드 영역 */}
       <div className="top-center-brand">
@@ -181,7 +180,7 @@ export default function Home() {
 
         <button
           className="mobile-nav-item"
-          onClick={() => setIsSettingsOpen(true)}
+          onClick={() => useTodoStore.getState().setSettingsOpen(true)}
         >
           <Settings size={24} />
           <span>설정</span>
