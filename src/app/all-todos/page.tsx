@@ -3,7 +3,7 @@
 import React, { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
-import { Plus, Search, Trash2, Edit, ChevronDown, ChevronUp, X, Check, Filter } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, ChevronDown, ChevronUp, X, Check, Filter, Home, Folder } from 'lucide-react';
 import { useTodoStore, Todo, QuadrantType, StatusType, EnergyType, RepetitionType, ContextType } from '@/store/useTodoStore';
 import { useSearchParams, useRouter } from 'next/navigation';
 
@@ -464,9 +464,6 @@ const AllTodosContent = () => {
 
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
-              <Link href="/" className={`mobile-all-nav-item`}>
-                <img src="/logo_final_v2.png" alt="홈" className="mobile-nav-icon" />
-              </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
                 <img src="/q1.png" alt="해" className="mobile-nav-icon" />
               </button>
@@ -479,9 +476,12 @@ const AllTodosContent = () => {
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
                 <img src="/q4_final_v2.png" alt="요" className="mobile-nav-icon" />
               </button>
-              <button className={`mobile-all-nav-item last-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
-                <img src="/archive.png" alt="보관함" className="mobile-nav-icon" />
+              <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
+                <Folder size={24} color="white" strokeWidth={1.5} />
               </button>
+              <Link href="/" className={`mobile-all-nav-item active`}>
+                <Home size={28} color="white" strokeWidth={1.5} />
+              </Link>
             </nav>
 
             {isFilterOpen && (
