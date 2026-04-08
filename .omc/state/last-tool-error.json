@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"C:\\\\Users\\\\ACECOM\\\\.claude\\\\projects\\\\E------------------\\\\memory\\\\MEMORY.md\"}",
+  "error": "File does not exist. Note: your current working directory is E:\\바이브코딩\\할일관리_아이젠하위.",
+  "timestamp": "2026-04-07T23:52:37.869Z",
+  "retry_count": 1
+}

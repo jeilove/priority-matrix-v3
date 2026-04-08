@@ -1,0 +1,240 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775563233703,
+  "projectRoot": "E:\\바이브코딩\\할일관리_아이젠하위",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "16.2.2",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "latest",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "latest",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "pnpm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "pnpm build",
+    "testCommand": null,
+    "lintCommand": "pnpm lint",
+    "devCommand": "pnpm dev",
+    "scripts": {
+      "dev": "next dev -p 3001 -H 0.0.0.0",
+      "dev:clean": "node -e \"const fs = require('fs'); if (fs.existsSync('.next')) fs.rmSync('.next', { recursive: true, force: true });\" && next dev -p 3001 -H 0.0.0.0",
+      "build": "prisma generate && next build",
+      "postinstall": "prisma generate",
+      "start": "next start",
+      "lint": "next lint"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "prisma": {
+      "path": "prisma",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775563233324,
+      "keyFiles": [
+        "schema.prisma"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 9,
+      "lastAccessed": 1775563233325,
+      "keyFiles": [
+        "archive.png",
+        "logo.png",
+        "logo_final_v2.png",
+        "q1.png",
+        "q2.png"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1775563233343,
+      "keyFiles": []
+    },
+    "아이콘": {
+      "path": "아이콘",
+      "purpose": null,
+      "fileCount": 9,
+      "lastAccessed": 1775563233344,
+      "keyFiles": [
+        "AI 리포트 아이콘.png",
+        "랭킹.png",
+        "바 아이콘.png",
+        "보관함.png",
+        "요 아이콘.png"
+      ]
+    },
+    "화면디자인": {
+      "path": "화면디자인",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1775563233345,
+      "keyFiles": [
+        "AI 리포트 화면.png",
+        "메인화면.png",
+        "모든 할 일 화면.png",
+        "사분면.png",
+        "설정 화면.png"
+      ]
+    },
+    "prisma\\migrations": {
+      "path": "prisma\\migrations",
+      "purpose": "Database migrations",
+      "fileCount": 1,
+      "lastAccessed": 1775563233345,
+      "keyFiles": [
+        "migration_lock.toml"
+      ]
+    },
+    "src\\app": {
+      "path": "src\\app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1775563233346,
+      "keyFiles": [
+        "globals.css",
+        "layout.tsx",
+        "page.tsx"
+      ]
+    },
+    "src\\components": {
+      "path": "src\\components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1775563233347,
+      "keyFiles": []
+    },
+    "src\\lib": {
+      "path": "src\\lib",
+      "purpose": "Library code",
+      "fileCount": 2,
+      "lastAccessed": 1775563233347,
+      "keyFiles": [
+        "auth.ts",
+        "prisma.ts"
+      ]
+    },
+    "src\\utils": {
+      "path": "src\\utils",
+      "purpose": "Utility functions",
+      "fileCount": 1,
+      "lastAccessed": 1775563233347,
+      "keyFiles": [
+        "googleSyncEngine.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "run_app.bat",
+      "accessCount": 10,
+      "lastAccessed": 1775566117137,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\page.tsx",
+      "accessCount": 8,
+      "lastAccessed": 1775606008097,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\home\\CircleInput.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1775606009057,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\home\\QuadrantGrid.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1775606009274,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\layout\\Header.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775606031195,
+      "type": "file"
+    },
+    {
+      "path": "src",
+      "accessCount": 1,
+      "lastAccessed": 1775563347301,
+      "type": "directory"
+    },
+    {
+      "path": "src\\app\\api\\todos\\route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775563495104,
+      "type": "file"
+    },
+    {
+      "path": "src\\store\\useTodoStore.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775563812416,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\providers\\SyncManager.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775563949689,
+      "type": "file"
+    },
+    {
+      "path": "src\\app\\globals.css",
+      "accessCount": 1,
+      "lastAccessed": 1775605447152,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

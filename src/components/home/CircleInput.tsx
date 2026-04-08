@@ -304,7 +304,7 @@ const CircleInput = ({ forceOpen, onClose }: { forceOpen?: boolean; onClose?: ()
         }
 
         @media (max-width: 768px) {
-          .circle-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); top: auto; }
+          .circle-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); bottom: auto; }
           .expand-trigger { width: 54px; height: 54px; }
           .main-input-box { width: calc(100vw - 32px); max-width: 360px; height: 260px; }
         }

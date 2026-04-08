@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Home as HomeIcon, List, Settings, Plus } from 'lucide-react';
+import { Home as HomeIcon, List, Settings, Plus, LogIn, LogOut } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import CircleInput from '@/components/home/CircleInput';
 import QuadrantGrid from '@/components/home/QuadrantGrid';
@@ -11,6 +11,7 @@ import SettingsModal from '@/components/home/SettingsModal';
 import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor, TouchSensor, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { useTodoStore, Todo } from '@/store/useTodoStore';
 import { useState, useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 // 드래그 시 보여줄 오버레이 (잡고 움직이는 요소)
 const DragPreview = ({ text }: { text: string }) => (
@@ -42,6 +43,7 @@ export default function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [mobileAddOpen, setMobileAddOpen] = useState(false);
+  const { data: session } = useSession();
   const version = "3.2.0";
 
   useEffect(() => {
@@ -159,26 +161,29 @@ export default function Home() {
       {/* 모바일 전용 하단 탭바 */}
       <nav className="mobile-bottom-nav">
         <Link href="/" className="mobile-nav-item active">
-          <HomeIcon size={22} />
-          <span>홈</span>
+          <HomeIcon size={24} />
         </Link>
         <Link href="/all-todos" className="mobile-nav-item">
-          <List size={22} />
-          <span>목록</span>
+          <List size={24} />
         </Link>
-        <button
-          className="mobile-nav-item mobile-add-btn"
-          onClick={() => setMobileAddOpen(true)}
-        >
-          <div className="mobile-add-circle">
-            <Plus size={24} color="white" />
-          </div>
-        </button>
+        
+        {session ? (
+          <button className="mobile-nav-item" onClick={() => signOut()}>
+            <LogOut size={24} />
+            <span>로그아웃</span>
+          </button>
+        ) : (
+          <button className="mobile-nav-item" onClick={() => signIn('google')}>
+            <LogIn size={24} />
+            <span>로그인</span>
+          </button>
+        )}
+
         <button
           className="mobile-nav-item"
           onClick={() => setIsSettingsOpen(true)}
         >
-          <Settings size={22} />
+          <Settings size={24} />
           <span>설정</span>
         </button>
       </nav>
