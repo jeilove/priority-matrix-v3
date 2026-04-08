@@ -67,13 +67,17 @@ const DraggableTodo = ({ todo }: { todo: Todo }) => {
   );
 };
 
-const CircleInput = () => {
+const CircleInput = ({ forceOpen, onClose }: { forceOpen?: boolean; onClose?: () => void }) => {
   const [isExpanded, setIsExpanded] = useState(false); // 중앙 박스 확장 여부
   const [todoText, setTodoText] = useState('');
   const [estimate, setEstimate] = useState('');
   const [isInputMode, setIsInputMode] = useState(false);
   const [inputStage, setInputStage] = useState<'text' | 'estimate'>('text');
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  React.useEffect(() => {
+    if (forceOpen) setIsExpanded(true);
+  }, [forceOpen]);
 
   const { todos, addTodo } = useTodoStore();
   const inboxTodos = todos.filter(t => t.quadrant === 'inbox');
@@ -130,7 +134,7 @@ const CircleInput = () => {
         </button>
       ) : (
         <div className="main-input-box glass expanded-box">
-          <button className="minimize-btn" onClick={() => { setIsExpanded(false); setIsInputMode(false); }} title="닫기">
+          <button className="minimize-btn" onClick={() => { setIsExpanded(false); setIsInputMode(false); onClose?.(); }} title="닫기">
             <Minimize2 size={20} />
           </button>
 
@@ -299,6 +303,11 @@ const CircleInput = () => {
           z-index: 10;
         }
 
+        @media (max-width: 768px) {
+          .circle-container { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); top: auto; }
+          .expand-trigger { width: 54px; height: 54px; }
+          .main-input-box { width: calc(100vw - 32px); max-width: 360px; height: 260px; }
+        }
         .main-input-box {
           width: 270px;
           height: 270px;

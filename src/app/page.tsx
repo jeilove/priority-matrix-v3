@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { Home as HomeIcon, List, Settings, Plus } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import CircleInput from '@/components/home/CircleInput';
 import QuadrantGrid from '@/components/home/QuadrantGrid';
@@ -39,6 +41,7 @@ export default function Home() {
   const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [mobileAddOpen, setMobileAddOpen] = useState(false);
   const version = "3.2.0";
 
   useEffect(() => {
@@ -92,22 +95,23 @@ export default function Home() {
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
+      {/* PC 브랜드 영역 */}
       <div className="top-center-brand">
-        <img 
-          src="/logo_final_v2.png" 
-          alt="해줘봐요 로고" 
-          className="brand-logo" 
+        <img
+          src="/logo_final_v2.png"
+          alt="해줘봐요 로고"
+          className="brand-logo"
           style={{ height: '80px', width: 'auto', objectFit: 'contain' }}
         />
         <div className="brand-slogan">
           <span className="slogan-line">실행-계획</span>
           <span className="slogan-line">위임-삭제</span>
         </div>
-        
+
         <div className="global-sort-control glass">
           <span className="sort-label">정렬:</span>
-          <select 
-            value={sortOrder} 
+          <select
+            value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value as any)}
             className="sort-select-v2"
           >
@@ -115,6 +119,20 @@ export default function Home() {
             <option value="abc">가나다순 ▾</option>
           </select>
         </div>
+      </div>
+
+      {/* 모바일 전용 상단 바 */}
+      <div className="mobile-top-bar">
+        <img src="/logo_final_v2.png" alt="해줘봐요 로고" className="mobile-brand-logo" />
+        <span className="mobile-app-title">해줘봐요</span>
+        <select
+          value={sortOrder}
+          onChange={(e) => setSortOrder(e.target.value as any)}
+          className="mobile-sort-select glass"
+        >
+          <option value="recent">최근순</option>
+          <option value="abc">가나다순</option>
+        </select>
       </div>
 
       <div className={`content-container ${activeTodo ? 'is-dragging' : ''}`}>
@@ -126,7 +144,7 @@ export default function Home() {
           <div className="matrix-container">
             <QuadrantGrid />
             <div className={`input-wrapper ${activeTodo ? 'no-event' : ''}`}>
-              <CircleInput />
+              <CircleInput forceOpen={mobileAddOpen} onClose={() => setMobileAddOpen(false)} />
             </div>
           </div>
 
@@ -137,6 +155,33 @@ export default function Home() {
 
         <p className="footer-hint">각 사분면을 <span className="highlight">더블 클릭</span>하여 상세 내용을 확인하세요.</p>
       </div>
+
+      {/* 모바일 전용 하단 탭바 */}
+      <nav className="mobile-bottom-nav">
+        <Link href="/" className="mobile-nav-item active">
+          <HomeIcon size={22} />
+          <span>홈</span>
+        </Link>
+        <Link href="/all-todos" className="mobile-nav-item">
+          <List size={22} />
+          <span>목록</span>
+        </Link>
+        <button
+          className="mobile-nav-item mobile-add-btn"
+          onClick={() => setMobileAddOpen(true)}
+        >
+          <div className="mobile-add-circle">
+            <Plus size={24} color="white" />
+          </div>
+        </button>
+        <button
+          className="mobile-nav-item"
+          onClick={() => setIsSettingsOpen(true)}
+        >
+          <Settings size={22} />
+          <span>설정</span>
+        </button>
+      </nav>
 
       <style jsx>{`
         .no-event { pointer-events: none; }
@@ -222,6 +267,90 @@ export default function Home() {
         }
         .footer-hint { margin-top: 50px; color: var(--text-secondary); font-size: 0.9rem; opacity: 0.6; }
         .highlight { color: var(--accent-hover); font-weight: 600; }
+
+        /* 모바일 전용 상단 바 */
+        .mobile-top-bar {
+          display: none;
+          align-items: center;
+          gap: 10px;
+          padding: 10px 16px;
+          background: rgba(255,255,255,0.03);
+          border-bottom: 1px solid rgba(255,255,255,0.07);
+          width: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+          z-index: 1000;
+          backdrop-filter: blur(12px);
+        }
+        .mobile-brand-logo { height: 32px; width: auto; object-fit: contain; }
+        .mobile-app-title { font-size: 1rem; font-weight: 800; color: white; flex: 1; }
+        .mobile-sort-select {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 10px;
+          padding: 5px 10px;
+          color: white;
+          font-size: 0.8rem;
+          font-weight: 700;
+          outline: none;
+          font-family: inherit;
+        }
+        .mobile-sort-select option { background: #1a1f2e; color: white; }
+
+        /* 모바일 하단 탭바 */
+        .mobile-bottom-nav {
+          display: none;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 64px;
+          background: rgba(13,17,23,0.95);
+          border-top: 1px solid rgba(255,255,255,0.08);
+          backdrop-filter: blur(16px);
+          align-items: center;
+          justify-content: space-around;
+          z-index: 2000;
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        .mobile-nav-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 3px;
+          color: rgba(255,255,255,0.45);
+          font-size: 0.65rem;
+          font-weight: 600;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 6px 16px;
+          transition: color 0.2s;
+          text-decoration: none;
+        }
+        .mobile-nav-item.active { color: var(--accent-color); }
+        .mobile-nav-item:hover { color: rgba(255,255,255,0.8); }
+        .mobile-add-btn { position: relative; top: -10px; }
+        .mobile-add-circle {
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: var(--accent-color);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 20px rgba(46,160,67,0.45);
+        }
+
+        @media (max-width: 768px) {
+          .mobile-top-bar { display: flex; }
+          .mobile-bottom-nav { display: flex; }
+          .top-center-brand { display: none; }
+          .main-layout { padding-top: 56px; padding-bottom: 64px; }
+          .content-container { margin-top: 16px; }
+          .footer-hint { display: none; }
+        }
       `}</style>
     </main>
   );

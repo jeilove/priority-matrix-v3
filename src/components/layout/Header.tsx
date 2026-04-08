@@ -162,6 +162,9 @@ const Header = ({ onSettingsClick }: { onSettingsClick?: () => void }) => {
           .btn-text { display: none; }
           .login-btn-with-text, .logout-btn-with-text { padding: 8px; }
         }
+        @media (max-width: 768px) {
+          .fixed-nav { display: none; }
+        }
       `}</style>
     </header>
   );

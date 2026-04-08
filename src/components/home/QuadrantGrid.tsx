@@ -105,6 +105,12 @@ const DraggableTodoCard = ({ todo, color, onEdit, onDelete }: { todo: Todo; colo
         
         .card-actions { display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s; }
         .todo-card:hover .card-actions { opacity: 1; }
+        @media (max-width: 768px) {
+          .todo-card { min-height: 52px; padding: 6px 8px; gap: 6px; }
+          .todo-text { font-size: 0.88rem; }
+          .mini-tag { font-size: 0.68rem; padding: 1px 4px; }
+          .card-actions { opacity: 1; }
+        }
         .action-icon-btn { background: none; border: none; color: rgba(255, 255, 255, 0.4); cursor: pointer; padding: 4px; display: flex; align-items: center; }
         .action-icon-btn:hover { color: white; }
       `}</style>
@@ -317,6 +323,19 @@ const DroppableQuadrant = ({ q, todos, onDoubleClick }: { q: any; todos: Todo[];
         @keyframes pulse {
           0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; }
         }
+        @media (max-width: 768px) {
+          .quadrant-container { padding: 10px; min-height: 0; border-radius: 16px; }
+          .quadrant-container:hover { transform: none; }
+          .q-icon-img-new { width: 28px !important; height: 28px !important; }
+          .q-label { font-size: 0.85rem; }
+          .q-sort-control { display: none; }
+          .q-branding-row { gap: 6px; }
+          .q-branding { gap: 5px; }
+          .todo-content-area { margin-top: 52px; margin-bottom: 10px; }
+          .q3 .todo-content-area, .q4 .todo-content-area { margin-top: 10px; margin-bottom: 52px; }
+          .todo-list { grid-template-columns: 1fr; gap: 6px; padding: 4px 2px; }
+          .placeholder-text { font-size: 0.7rem; }
+        }
       `}</style>
     </div>
   );
@@ -349,6 +368,10 @@ const QuadrantGrid = () => {
       <style jsx>{`
         .grid-wrapper { width: 100%; height: calc(100vh - 120px); max-height: 950px; display: flex; justify-content: center; align-items: center; }
         .quadrant-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 28px; width: 100%; height: 100%; }
+        @media (max-width: 768px) {
+          .grid-wrapper { height: calc(100dvh - 140px); max-height: none; padding: 0 10px; }
+          .quadrant-grid { gap: 10px; }
+        }
       `}</style>
     </div>
   );
