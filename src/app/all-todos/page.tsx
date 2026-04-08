@@ -50,7 +50,7 @@ const quadrantIcons: Record<string, string> = {
   'q1': '/q1.png',
   'q2': '/q2.png',
   'q3': '/q3.png',
-  'q4': '/q4_final_v2.png',
+  'q4': '/q4.png',
   'inbox': '/archive.png'
 };
 
@@ -464,6 +464,9 @@ const AllTodosContent = () => {
 
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
+              <Link href="/" className={`mobile-all-nav-item`}>
+                <Home size={28} color="white" strokeWidth={1.5} />
+              </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
                 <img src="/q1.png" alt="해" className="mobile-nav-icon" />
               </button>
@@ -474,14 +477,11 @@ const AllTodosContent = () => {
                 <img src="/q3.png" alt="줘" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
-                <img src="/q4_final_v2.png" alt="요" className="mobile-nav-icon" />
+                <img src="/q4.png" alt="요" className="mobile-nav-icon" />
               </button>
-              <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
+              <button className={`mobile-all-nav-item last-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
                 <Folder size={24} color="white" strokeWidth={1.5} />
               </button>
-              <Link href="/" className={`mobile-all-nav-item active`}>
-                <Home size={28} color="white" strokeWidth={1.5} />
-              </Link>
             </nav>
 
             {isFilterOpen && (
