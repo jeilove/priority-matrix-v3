@@ -1,6 +1,7 @@
 'use client';
 
 import React, { Suspense, useState, useEffect } from 'react';
+import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import { Plus, Search, Trash2, Edit, ChevronDown, ChevronUp, X, Check, Filter } from 'lucide-react';
 import { useTodoStore, Todo, QuadrantType, StatusType, EnergyType, RepetitionType, ContextType } from '@/store/useTodoStore';
@@ -402,29 +403,6 @@ const AllTodosContent = () => {
 
     return (
         <div className="container" style={{ paddingTop: '20px' }}>
-            <nav className="quadrant-tabs">
-              {Object.entries(quadrantLabels).map(([key, label]) => (
-                <button 
-                  key={key} 
-                  className={`tab-btn ${filter === key ? 'active' : ''}`}
-                  onClick={() => handleFilterChange(key)}
-                >
-                  <img src={quadrantIcons[key]} alt="" className="tab-icon-small" />
-                  <span className="tab-label-text">
-                    {key === 'q1' ? (
-                      <>당장 <span style={{ color: 'var(--q1-color)' }}>해</span></>
-                    ) : key === 'q2' ? (
-                      <>살펴 <span style={{ color: 'var(--q2-color)' }}>봐</span></>
-                    ) : key === 'q3' ? (
-                      <>남 <span style={{ color: 'var(--q3-color)' }}>줘</span></>
-                    ) : key === 'q4' ? (
-                      <><span style={{ color: 'var(--q4-color)' }}>요</span>건 빼</>
-                    ) : label}
-                  </span>
-                </button>
-              ))}
-            </nav>
-
             <section className="controls-row">
               <div className="search-box glass">
                   <Search size={18} color="var(--text-secondary)" />
@@ -460,6 +438,34 @@ const AllTodosContent = () => {
                 {isFilterOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               </button>
             </section>
+
+            {/* 모바일 전용 하단 고정 탭바 */}
+            <nav className="mobile-all-bottom-nav">
+              <Link href="/" className="mobile-all-nav-item">
+                <img src="/icons/home.png" alt="홈" className="mobile-nav-icon" />
+                <span>홈</span>
+              </Link>
+              <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
+                <img src="/icons/q1.png" alt="해" className="mobile-nav-icon" />
+                <span>해</span>
+              </button>
+              <button className={`mobile-all-nav-item ${filter === 'q2' ? 'active' : ''}`} onClick={() => handleFilterChange('q2')}>
+                <img src="/icons/q2.png" alt="봐" className="mobile-nav-icon" />
+                <span>봐</span>
+              </button>
+              <button className={`mobile-all-nav-item ${filter === 'q3' ? 'active' : ''}`} onClick={() => handleFilterChange('q3')}>
+                <img src="/icons/q3.png" alt="줘" className="mobile-nav-icon" />
+                <span>줘</span>
+              </button>
+              <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
+                <img src="/icons/q4.png" alt="요" className="mobile-nav-icon" />
+                <span>요</span>
+              </button>
+              <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
+                <img src="/icons/inbox.png" alt="보관함" className="mobile-nav-icon" />
+                <span>보관함</span>
+              </button>
+            </nav>
 
             {isFilterOpen && (
               <section className="filter-advanced-section glass accordion-open">
@@ -719,10 +725,15 @@ const AllTodosContent = () => {
                 .no-data { text-align: center; color: var(--text-secondary); padding: 50px; font-weight: 600; font-size: 0.9rem; }
 
                 @media (max-width: 768px) {
-                  .controls-row { flex-wrap: nowrap; gap: 8px; padding: 0 10px; }
+                  .all-todos-layout { padding-top: 10px; }
+                  .container { padding-top: 5px !important; }
+                  .controls-row { flex-wrap: nowrap; gap: 8px; padding: 0 10px; margin-top: 5px; }
                   .search-box { flex: 3; padding: 8px 12px; }
                   .search-box input { font-size: 0.9rem; }
                   
+                  /* 상단 탭바 숨기기 (모바일전용) */
+                  .quadrant-tabs { display: none !important; }
+
                   .mobile-icon-only { 
                     flex: 1; 
                     min-width: 44px; 
@@ -745,14 +756,49 @@ const AllTodosContent = () => {
                     z-index: 2;
                   }
                   
-                  .todo-list-wrapper { margin-bottom: 100px; }
+                  .todo-list-wrapper { margin-bottom: 120px; }
                   .todo-grid { grid-template-columns: 1fr; gap: 16px; }
-                  .quadrant-tabs { gap: 8px; padding: 10px 5px; }
-                  .tab-btn { padding: 8px 10px; font-size: 0.8rem; flex: 1; min-width: auto; }
-                  .tab-icon-small { width: 28px; height: 28px; }
-                  .tab-label-text { display: none; }
+
+                  /* 모바일 하단 탭바 스타일 */
+                  .mobile-all-bottom-nav {
+                    display: flex;
+                    position: fixed;
+                    bottom: 0; left: 0; right: 0;
+                    height: 80px;
+                    background: rgba(13, 17, 23, 0.8);
+                    backdrop-filter: blur(20px);
+                    border-top: 1px solid rgba(255, 255, 255, 0.08);
+                    justify-content: space-around;
+                    align-items: center;
+                    z-index: 3000;
+                    padding-bottom: env(safe-area-inset-bottom);
+                  }
+                  .mobile-all-nav-item {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 4px;
+                    background: none; border: none;
+                    color: var(--text-secondary);
+                    font-size: 0.7rem;
+                    font-weight: 700;
+                    padding: 8px;
+                    transition: all 0.2s;
+                    cursor: pointer;
+                  }
+                  .mobile-all-nav-item.active {
+                    color: white; scale: 1.1;
+                  }
+                  .mobile-nav-icon {
+                    width: 28px; height: 28px; object-fit: contain;
+                    opacity: 0.6; transition: all 0.2s;
+                  }
+                  .mobile-all-nav-item.active .mobile-nav-icon {
+                    opacity: 1; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+                  }
                 }
                 
+                .mobile-all-bottom-nav { display: none; } /* PC에선 숨김 */
                 .mobile-only-icon { display: none; }
                 .pc-only-icon { display: block; }
                 .pc-only-text { display: inline; }
