@@ -159,7 +159,7 @@ const DroppableQuadrant = ({ q, todos, onDoubleClick }: { q: any; todos: Todo[];
         <div className="q-branding-row">
           <div className="q-branding">
             <img 
-              src={q.id === 4 ? `/q4_final_v2.png` : `/q${q.id}.png`} 
+              src={`/q${q.id}.png`} 
               alt={`Q${q.id} 아이콘`} 
               className="q-icon-img-new" 
               style={{ width: '44px', height: '44px', objectFit: 'contain', flexShrink: 0 }}
@@ -281,7 +281,7 @@ const DroppableQuadrant = ({ q, todos, onDoubleClick }: { q: any; todos: Todo[];
         .q-rank-btn:hover { transform: scale(1.15) translateY(-2px); filter: drop-shadow(0 0 8px rgba(255,159,67,0.4)); }
         .rank-icon-img { width: 22px; height: 22px; object-fit: contain; }
         
-        .q-icon-img-new { height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+        .q-icon-img-new { height: 44px; width: auto; object-fit: contain; }
         .q-label { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.02em; color: white; }
         
         .header-drag-over { background: rgba(46, 160, 67, 0.2) !important; border-radius: 12px; padding: 4px; }
