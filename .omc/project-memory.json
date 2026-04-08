@@ -188,6 +188,12 @@
       "type": "file"
     },
     {
+      "path": "src\\app\\all-todos\\page.tsx",
+      "accessCount": 6,
+      "lastAccessed": 1775619063903,
+      "type": "file"
+    },
+    {
       "path": "src\\components\\home\\CircleInput.tsx",
       "accessCount": 5,
       "lastAccessed": 1775606009057,
@@ -200,6 +206,12 @@
       "type": "file"
     },
     {
+      "path": "src\\app\\globals.css",
+      "accessCount": 5,
+      "lastAccessed": 1775619029042,
+      "type": "file"
+    },
+    {
       "path": "src\\components\\layout\\Header.tsx",
       "accessCount": 3,
       "lastAccessed": 1775606031195,
@@ -207,8 +219,8 @@
     },
     {
       "path": "src",
-      "accessCount": 1,
-      "lastAccessed": 1775563347301,
+      "accessCount": 3,
+      "lastAccessed": 1775618997719,
       "type": "directory"
     },
     {
@@ -230,10 +242,10 @@
       "type": "file"
     },
     {
-      "path": "src\\app\\globals.css",
+      "path": "src\\components\\layout",
       "accessCount": 1,
-      "lastAccessed": 1775605447152,
-      "type": "file"
+      "lastAccessed": 1775618916426,
+      "type": "directory"
     }
   ],
   "userDirectives": []

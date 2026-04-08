@@ -480,7 +480,7 @@ const AllTodosContent = () => {
                 <img src="/q4_final_v2.png" alt="요" className="mobile-nav-icon" />
               </button>
               <button className={`mobile-all-nav-item last-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
-                <img src="/icons/inbox.png" alt="보관함" className="mobile-nav-icon" />
+                <img src="/archive.png" alt="보관함" className="mobile-nav-icon" />
               </button>
             </nav>
 
@@ -767,7 +767,7 @@ const AllTodosContent = () => {
                   .mobile-only-icon { display: block !important; width: 22px; height: 22px; object-fit: contain; }
                   .chevron { color: var(--text-secondary); opacity: 0.8; width: 14px; height: 14px; }
                   .sort-img { filter: brightness(2) contrast(1.2); opacity: 1; }
-                  .filter-img { mix-blend-mode: multiply; filter: brightness(1.1) contrast(1.1); }
+                  .filter-img { filter: invert(1) brightness(1.5); }
                   
                   .pc-only-icon, .pc-only-text, .sort-label { display: none !important; }
                   
