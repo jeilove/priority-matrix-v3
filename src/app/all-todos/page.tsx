@@ -465,7 +465,7 @@ const AllTodosContent = () => {
             {/* 모바일 전용 하단 고정 탭바 */}
             <nav className="mobile-all-bottom-nav">
               <Link href="/" className={`mobile-all-nav-item`}>
-                <img src="/logo_final_v2.png" alt="홈" className="mobile-nav-icon" />
+                <img src="/icons/home.png" alt="홈" className="mobile-nav-icon" />
               </Link>
               <button className={`mobile-all-nav-item ${filter === 'q1' ? 'active' : ''}`} onClick={() => handleFilterChange('q1')}>
                 <img src="/q1.png" alt="해" className="mobile-nav-icon" />
@@ -479,8 +479,8 @@ const AllTodosContent = () => {
               <button className={`mobile-all-nav-item ${filter === 'q4' ? 'active' : ''}`} onClick={() => handleFilterChange('q4')}>
                 <img src="/q4_final_v2.png" alt="요" className="mobile-nav-icon" />
               </button>
-              <button className={`mobile-all-nav-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
-                <img src="/archive.png" alt="보관함" className="mobile-nav-icon" />
+              <button className={`mobile-all-nav-item last-item ${filter === 'inbox' ? 'active' : ''}`} onClick={() => handleFilterChange('inbox')}>
+                <img src="/icons/inbox.png" alt="보관함" className="mobile-nav-icon" />
               </button>
             </nav>
 
@@ -765,17 +765,11 @@ const AllTodosContent = () => {
                   }
                   .mobile-sort-trigger { display: flex; align-items: center; gap: 2px; }
                   .mobile-only-icon { display: block !important; width: 22px; height: 22px; object-fit: contain; }
-                  .chevron { color: var(--text-secondary); opacity: 0.6; width: 14px; height: 14px; }
-                  .sort-img { mix-blend-mode: color-dodge; opacity: 0.9; }
-                  .filter-img { mix-blend-mode: multiply; opacity: 1; filter: contrast(1.1); }
+                  .chevron { color: var(--text-secondary); opacity: 0.8; width: 14px; height: 14px; }
+                  .sort-img { filter: brightness(2) contrast(1.2); opacity: 1; }
+                  .filter-img { mix-blend-mode: multiply; filter: brightness(1.1) contrast(1.1); }
                   
                   .pc-only-icon, .pc-only-text, .sort-label { display: none !important; }
-                  
-                  .filter-toggle-btn { 
-                    background: white !important; 
-                    border: 1px solid rgba(0,0,0,0.1) !important;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-                  }
                   
                   .all-todos-sort-select {
                     position: absolute;
@@ -802,6 +796,7 @@ const AllTodosContent = () => {
                     padding-bottom: env(safe-area-inset-bottom);
                     padding-left: 10px; padding-right: 10px;
                   }
+                  .last-item { border: 2px solid white !important; }
                   .mobile-all-nav-item {
                     display: flex;
                     flex-direction: column;
@@ -819,8 +814,8 @@ const AllTodosContent = () => {
                     transform: translateY(-2px);
                   }
                   .mobile-nav-icon {
-                    width: 36px; height: 36px; object-fit: contain;
-                    opacity: 0.6; transition: all 0.3s;
+                    width: 32px; height: 32px; object-fit: contain;
+                    opacity: 0.7; transition: all 0.3s;
                   }
                   .mobile-all-nav-item.active .mobile-nav-icon {
                     opacity: 1; 
