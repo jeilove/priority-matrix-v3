@@ -8,7 +8,7 @@ import CircleInput from '@/components/home/CircleInput';
 import QuadrantGrid from '@/components/home/QuadrantGrid';
 import SettingsModal from '@/components/home/SettingsModal';
 
-import { DndContext, DragEndEvent, useSensor, useSensors, PointerSensor, TouchSensor, DragOverlay, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, useSensor, useSensors, MouseSensor, TouchSensor, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import { useTodoStore, Todo } from '@/store/useTodoStore';
 import { useState, useEffect } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -51,7 +51,7 @@ export default function Home() {
   }, []);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
+    useSensor(MouseSensor, {
       activationConstraint: {
         distance: 3,
       },
@@ -59,7 +59,7 @@ export default function Home() {
     useSensor(TouchSensor, {
       activationConstraint: {
         delay: 250,
-        tolerance: 5,
+        tolerance: 20,
       },
     })
   );

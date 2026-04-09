@@ -6,8 +6,9 @@
     1. **터치 간섭**: 모바일 브라우저의 기본 터치 동작(스크롤, 당겨서 새로고침 등)이 `dnd-kit`의 드래그 이벤트와 충돌함.
     2. **센서 임계치 부족**: `TouchSensor`의 `tolerance`와 `delay` 값이 모바일 정밀 조작에 최적화되어 있지 않아 미세한 움직임에도 드래그가 취소됨.
   - **처리 결과**:
-    1. `QuadrantGrid.tsx`의 `.todo-card` 스타일에 `touch-action: none`을 추가하여 브라우저의 기본 터치 간섭을 물리적으로 차단함.
-    2. `page.tsx`의 `TouchSensor` 설정을 `delay: 250ms`, `tolerance: 5px`로 조정하여 의도적인 드래그 시도를 더 정확하게 감지하고 유지하도록 보정함. (#버그수정 #모바일최적화 #성공)
+    1. `QuadrantGrid.tsx`의 `.todo-card` 스타일에 `touch-action: none` 및 `user-select: none`을 추가하여 제스처 및 선택 간섭을 차단함.
+    2. `page.tsx`에서 `PointerSensor`를 `MouseSensor`와 `TouchSensor`로 분리하여 마우스 우선 로직의 간섭을 해결함.
+    3. `TouchSensor`의 `tolerance`를 `20px`로 상향하여 모바일 터치 오차 범위를 확보함. (#버그수정 #모바일최적화 #성공)
 
 - [x] 프로젝트 공식 지식 가이드(`VIBE_CODING_KNOWLEDGE_BASE`) 구축 (2026-03-24)
   - **증상**: 에이전트 교체 시 과거 프로젝트의 반복 이슈(캐시, 프로세스 좀비 등)를 학습하지 못함.
